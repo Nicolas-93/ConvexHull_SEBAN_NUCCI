@@ -1,0 +1,58 @@
+{
+    "cpptools.autoDetect": "off",
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "Build Project",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "demo.c",
+                "generation.c",
+                "graphics.c",
+                "convexhull.c",
+                "-o", "${workspaceFolder}/build/demo",
+                "-lMLV",
+                "-lm"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Build convexhull demo."
+        },
+        {
+            "type": "cppbuild",
+            "label": "C: Build active file",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/build/${fileBasenameNoExtension}",
+                "-lMLV",
+                "-lm"
+            ],
+            "options": {
+                "cwd": "${fileDirname}",
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Run a file having a main."
+        }
+    ],
+    "version": "2.0.0"
+}
