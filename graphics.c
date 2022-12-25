@@ -2,14 +2,14 @@
 #include "generation.h"
 #include "graphics.h"
 
-void GFX_plot_points(ListPoint* points) {
+void GFX_plot_points(ListPoint* points, MLV_Color color) {
     Vertex* entry;
     CIRCLEQ_FOREACH(entry, points, entries) {
         MLV_draw_filled_circle(
             entry->p->x,
             entry->p->y,
             5,
-            MLV_COLOR_RED
+            color
         );
     }
 }

@@ -22,14 +22,18 @@ void GEN_rectangle(ListPoint* points, int largeur, int hauteur, int nb_points) {
 
 Vertex* GEN_new_vertex(Point point) {
     Point* new_point = malloc(sizeof(Point));
-    *new_point = point;
     Vertex* new_vtx = malloc(sizeof(Vertex));
+    if (!new_point || !new_vtx)
+        return NULL;
+    *new_point = point;
     new_vtx->p = new_point;
     return new_vtx;
 }
 
 Vertex* GEN_new_vertex_pointer(Point* point) {
     Vertex* new_vtx = malloc(sizeof(Vertex));
+    if (!new_vtx)
+        return NULL;
     new_vtx->p = point;
     return new_vtx;
 }

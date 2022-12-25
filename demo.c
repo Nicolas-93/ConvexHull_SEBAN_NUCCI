@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include <MLV/MLV_all.h>
 #include "generation.h"
 #include "graphics.h"
@@ -16,10 +17,15 @@ int main(void) {
     MouseEv mouse;
     Point* point;
 
+    srand(time(NULL));
+    //GEN_rectangle(&points, 500, 500, 100);
+    //CVH_points_to_convex(&points, convex, &reste);
+
     while (1) {
         MLV_clear_window(MLV_COLOR_WHITE);
         
-        GFX_plot_points(&points);
+        GFX_plot_points(&reste, MLV_COLOR_BLUE);
+        GFX_plot_points((ListPoint*) &(convex->poly), MLV_COLOR_RED);
         GFX_draw_polygon(convex);
         
         MLV_actualise_window();
