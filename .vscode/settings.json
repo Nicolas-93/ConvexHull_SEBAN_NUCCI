@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "kernel.h": "c",
+        "stddef.h": "c",
+        "typeinfo": "cpp",
+        "list.h": "c",
+        "linkage.h": "c",
+        "stdio.h": "c",
+        "generation.h": "c"
+    },
+    "git.autoRepositoryDetection": "openEditors",
+    "git.ignoredRepositories": ["doc/doxygen-awesome-css"]
+}

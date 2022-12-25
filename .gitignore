@@ -1,8 +1,8 @@
 build/*
 tmp/*
+doc/*
 .history/*
 .vscode/c_cpp_properties.json
-.vscode/settings.json
 
 # Prerequisites
 *.d

@@ -26,7 +26,7 @@ int main(void) {
         
         GFX_plot_points(&reste, MLV_COLOR_BLUE);
         GFX_plot_points((ListPoint*) &(convex->poly), MLV_COLOR_RED);
-        GFX_draw_polygon(convex);
+        GFX_draw_polygon(convex, MLV_COLOR_GREEN);
         
         MLV_actualise_window();
         mouse = GFX_wait_mouse_ev();
