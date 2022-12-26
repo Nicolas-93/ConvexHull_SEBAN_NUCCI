@@ -30,11 +30,11 @@ Vertex* GEN_new_vertex_pointer(Point* point);
 
 #define CIRCLEQ_TRUE_NEXT(head, elm)\
             ((void*) CIRCLEQ_NEXT(elm, entries) == (void*) head ?\
-             CIRCLEQ_FIRST(head) : CIRCLEQ_NEXT(elm, entries));
+             CIRCLEQ_FIRST(head) : CIRCLEQ_NEXT(elm, entries))
 
 #define CIRCLEQ_TRUE_PREV(head, elm)\
             ((void*) CIRCLEQ_PREV(elm, entries) == (void*) head ?\
-             CIRCLEQ_LAST(head) : CIRCLEQ_PREV(elm, entries));
+             CIRCLEQ_LAST(head) : CIRCLEQ_PREV(elm, entries))
 
 /**
  * @brief Définit un élément comme tête de la liste 

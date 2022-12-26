@@ -27,15 +27,14 @@ inline double CVH_direction_triangle(Point* a, Point* b, Point* c) {
  * Les points sont ajoutés inconditionnellement si le polygône
  * possède moins de 2 sommets, et ajoute le troisième positivement
  * de la la même manière que les sommets suivants.
- * Les sommets qui ne font plus parti de l'ensemble seront déplacés
- * à la liste reste.
- * Si le point ne fait pas parti du polygône, il ne sera pas
+ * Les sommets qui n'appartiennent plus à l'ensemble seront déplacés
+ * vers la liste reste.
+ * Si le point ne fait pas parti du polygône, il ne sera PAS
  * automatiquement ajouté à la liste reste.
- * @bug Parfois, tous les points ne sont pas supprimés.
  * @param point Adresse du point à ajouter.
  * @param convex Adresse de l'objet ConvexHull auquel sera ajouté le point.
  * @param reste Adresse de la liste des points n'appartenant plus au polygône.
- * @return 1 si le point a été ajouté, 0 sinon.
+ * @return 1 si le point a été ajouté à l'enveloppe convexe, 0 sinon.
  */
 int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
     Vertex* new_entry;
@@ -61,12 +60,12 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
         CIRCLEQ_SET_AS_FIRST(poly, new_entry, entries);
         convex->current_len++;
 
-        printf("\n");
-        printf("Nombre de points supprimés: %d\n", CVH_cleaning(convex, reste));
-        // while(CVH_cleaning(convex, reste));
+        int n_deleted = 0;
+        n_deleted = CVH_cleaning(convex, reste);
+        printf("Nombre de points supprimés: %d\n", n_deleted);
+        
         return 1;
     }
-        CVH_cleaning(convex, reste);
     return 0;
 }
 
@@ -74,7 +73,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
  * @brief Fonction auxillière de CVH_add().
  * Supprime les points ne faisant plus partis du polygône
  * convexe.
- * @bug Parfois, tous les points ne sont pas supprimés.
+ * Le polygône doit commencer à partir du dernier point ajouté.
  * @param convex Adresse de l'objet ConvexHull
  * @param reste Adresse de la liste où déplacer les points sortis
  * de l'ensemble.
@@ -91,13 +90,14 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
 
         if (!IS_DIRECT_TRIANGLE(vtx->p, vtx1->p, vtx2->p)) {
             CIRCLEQ_REMOVE(poly, vtx1, entries);
+            vtx = CIRCLEQ_TRUE_PREV(poly, CIRCLEQ_TRUE_PREV(poly, vtx));
             CIRCLEQ_INSERT_TAIL(reste, vtx1, entries);
             deleted_points++;
         }
-        /*else {
+        else {
             CIRCLEQ_SET_AS_FIRST(&(convex->poly), vtx, entries);
             break;
-        }*/
+        }
     }
     CIRCLEQ_FOREACH_REVERSE(vtx, poly, entries) {
         vtx1 = CIRCLEQ_TRUE_PREV(poly, vtx);
@@ -105,6 +105,7 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
 
         if (!IS_DIRECT_TRIANGLE(vtx->p, vtx2->p, vtx1->p)) {
             CIRCLEQ_REMOVE(poly, vtx1, entries);
+            vtx = CIRCLEQ_TRUE_NEXT(poly, CIRCLEQ_TRUE_NEXT(poly, vtx));
             CIRCLEQ_INSERT_TAIL(reste, vtx1, entries);
             deleted_points++;
         }
@@ -115,7 +116,7 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
     return deleted_points;
 }
 
-/**0
+/**
  * @brief Crée un polygône convexe avec la liste
  * de points fournie.
  * @param points Liste des points.
@@ -179,7 +180,7 @@ int CVH_add_to_convex(ConvexHull* convex, Point* point, ListPoint* reste) {
  */
 ConvexHull* CVH_init_convexhull(void) {
     ConvexHull* convex = calloc(1, sizeof(ConvexHull));
-    if(!convex)
+    if (!convex)
         return NULL;
 
     CIRCLEQ_INIT(&convex->poly);
