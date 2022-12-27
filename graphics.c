@@ -15,7 +15,7 @@ void GFX_plot_points(ListPoint* points, MLV_Color color) {
         MLV_draw_filled_circle(
             entry->p->x,
             entry->p->y,
-            5,
+            2,
             color
         );
     }
@@ -37,6 +37,17 @@ void GFX_draw_polygon(ConvexHull* convex, MLV_Color color) {
             color
         );
     }
+}
+
+void GFX_animate_points_to_convex(ConvexHull* convex, ListPoint* reste) {
+    MLV_clear_window(MLV_COLOR_WHITE);
+    
+    GFX_plot_points(reste, MLV_COLOR_BLUE);
+    GFX_plot_points((ListPoint*) &(convex->poly), MLV_COLOR_RED);
+    GFX_draw_polygon(convex, MLV_COLOR_ORANGE);
+
+    MLV_wait_milliseconds(1);
+    MLV_actualise_window();
 }
 
 void GFX_draw_triangle(Point a, Point b, Point c, MLV_Color color) {

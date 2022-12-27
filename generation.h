@@ -25,16 +25,20 @@ typedef struct {
 } ConvexHull;
 
 void GEN_rectangle(ListPoint* points, int largeur, int hauteur, int nb_points);
+void GEN_cercle(ListPoint* points, int largeur, int hauteur, int nb_points, int r_max, int croissant);
+void GEN_carre(ListPoint* points, int largeur, int hauteur, int nb_points, int r_max);
 Vertex* GEN_new_vertex(Point point);
 Vertex* GEN_new_vertex_pointer(Point* point);
+double rand_double(double n);
+double uniform(double a, double b);
 
 #define CIRCLEQ_TRUE_NEXT(head, elm)\
             ((void*) CIRCLEQ_NEXT(elm, entries) == (void*) head ?\
-             CIRCLEQ_FIRST(head) : CIRCLEQ_NEXT(elm, entries))
+            CIRCLEQ_FIRST(head) : CIRCLEQ_NEXT(elm, entries))
 
 #define CIRCLEQ_TRUE_PREV(head, elm)\
             ((void*) CIRCLEQ_PREV(elm, entries) == (void*) head ?\
-             CIRCLEQ_LAST(head) : CIRCLEQ_PREV(elm, entries))
+            CIRCLEQ_LAST(head) : CIRCLEQ_PREV(elm, entries))
 
 /**
  * @brief Définit un élément comme tête de la liste 

@@ -18,16 +18,16 @@ int main(void) {
     Point* point;
 
     srand(time(NULL));
-    //GEN_rectangle(&points, 500, 500, 100);
-    //CVH_points_to_convex(&points, convex, &reste);
+    //GEN_rectangle(&points, largeur_fenetre, hauteur_fenetre, 2000);
+    GEN_cercle(&points, largeur_fenetre, hauteur_fenetre, 2000, 200, 1);
+    //GEN_carre(&points, largeur_fenetre, hauteur_fenetre, 1000, 200);
 
+    CVH_points_to_convex(&points, convex, &reste, GFX_animate_points_to_convex);
     while (1) {
         MLV_clear_window(MLV_COLOR_WHITE);
-        
         GFX_plot_points(&reste, MLV_COLOR_BLUE);
         GFX_plot_points((ListPoint*) &(convex->poly), MLV_COLOR_RED);
         GFX_draw_polygon(convex, MLV_COLOR_ORANGE);
-        
         MLV_actualise_window();
         // break;
         mouse = GFX_wait_mouse_ev();

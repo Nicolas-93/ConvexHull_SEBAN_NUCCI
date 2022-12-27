@@ -4,7 +4,10 @@
 
 double CVH_direction_triangle(Point a, Point b, Point c);
 int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste);
-void CVH_points_to_convex(ListPoint* points, ConvexHull* convex, ListPoint* reste);
+void CVH_points_to_convex(
+    ListPoint* points, ConvexHull* convex, ListPoint* reste,
+    void (*callback)(ConvexHull*, ListPoint*)
+);
 void CVH_user_add(ConvexHull* convex, ListPoint* reste);
 int CVH_cleaning(ConvexHull* convex, ListPoint* reste);
 

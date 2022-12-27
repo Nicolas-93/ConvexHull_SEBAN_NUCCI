@@ -57,8 +57,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
         CIRCLEQ_SET_AS_FIRST(poly, new_entry, entries);
         convex->current_len++;
 
-        int n_deleted = 0;
-        n_deleted = CVH_cleaning(convex, reste);
+        CVH_cleaning(convex, reste);
         // printf("Nombre de points supprimés: %d\n", n_deleted);
         
         return 1;
@@ -99,7 +98,7 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
             deleted_points++;
         }
         else {
-            CIRCLEQ_SET_AS_FIRST(poly, vtx, entries);
+            //CIRCLEQ_SET_AS_FIRST(poly, vtx, entries);
             break;
         }
     }
@@ -108,7 +107,7 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
     fprintf(stderr, "Itération arrière :\n");
     #endif
 
-    for (vtx = CIRCLEQ_FIRST(poly); ;) {
+    for (; ;) {
         vtx1 = CIRCLEQ_TRUE_PREV(poly, vtx);
         vtx2 = CIRCLEQ_TRUE_PREV(poly, vtx1);
 
@@ -138,7 +137,8 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
  */
 void CVH_points_to_convex(
     ListPoint* points,
-    ConvexHull* convex, ListPoint* reste
+    ConvexHull* convex, ListPoint* reste,
+    void (*callback)(ConvexHull*, ListPoint*)
 ) {
     Vertex* vtx;
     Vertex* new_entry;
@@ -150,7 +150,10 @@ void CVH_points_to_convex(
             new_entry = GEN_new_vertex_pointer(vtx->p);
             CIRCLEQ_INSERT_HEAD(reste, new_entry, entries);
         }
+        if(callback)
+            callback(convex, reste);
     }
+
 }
 
 /**

@@ -4,13 +4,12 @@
         {
             "type": "cppbuild",
             "label": "Build Project",
-            "command": "/usr/bin/clang",
+            "command": "/usr/bin/gcc",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
                 "-std=c17",
                 "-Wall",
-                "-Werror",
                 "demo.c",
                 "generation.c",
                 "graphics.c",
