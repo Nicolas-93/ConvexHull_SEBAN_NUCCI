@@ -4,15 +4,19 @@
         {
             "type": "cppbuild",
             "label": "Build Project",
-            "command": "/usr/bin/gcc",
+            "command": "/usr/bin/clang",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
+                "-std=c17",
+                "-Wall",
+                "-Werror",
                 "demo.c",
                 "generation.c",
                 "graphics.c",
                 "convexhull.c",
                 "-o", "${workspaceFolder}/build/demo",
+                "-DDDEBUG_CVH_CLEANING",
                 "-lMLV",
                 "-lm"
             ],
@@ -48,8 +52,7 @@
                 "$gcc"
             ],
             "group": {
-                "kind": "build",
-                "isDefault": true
+                "kind": "build"
             },
             "detail": "Run a file having a main."
         }

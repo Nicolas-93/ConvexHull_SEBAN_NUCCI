@@ -49,6 +49,6 @@ Vertex* GEN_new_vertex_pointer(Point* point);
         \
         (head)->cqh_first->field.cqe_prev = (void*) (head); \
         (head)->cqh_last->field.cqe_next = (void*) (head); \
-    } while (0);
+    } while (0)
 
 #endif

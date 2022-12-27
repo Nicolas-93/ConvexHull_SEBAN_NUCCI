@@ -11,7 +11,7 @@
             "cwd": "${workspaceFolder}",
             "environment": [
                 {
-                    "name": "DISPLAY",
+                    "name": "DDISPLAY",
                     "value": "192.168.1.98:1"
                 }
             ],

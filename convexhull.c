@@ -3,7 +3,9 @@
 #include "generation.h"
 #include "convexhull.h"
 #include "MLV/MLV_all.h"
-
+#ifdef DEBUG_CVH_CLEANING
+#include "graphics.h"
+#endif
 
 /**
  * @brief Calcule l'orientation du triangle
@@ -13,14 +15,9 @@
  * @return L'orientation, en particulier est positif
  * si le triangle est direct, négatif sinon 
  */
-inline double CVH_direction_triangle(Point* a, Point* b, Point* c) {
-    return (b->x - a->x) * (c->y - a->y) - (c->x - a->x) * (b->y - a->y);
+inline double CVH_direction_triangle(Point a, Point b, Point c) {
+    return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 }
-
-/**
- * @brief Indique si le triangle est direct
- */
-#define IS_DIRECT_TRIANGLE(a, b, c) (CVH_direction_triangle(a, b, c) >= 0)
 
 /**
  * @brief Ajoute un point au polygone convexe.
@@ -39,7 +36,7 @@ inline double CVH_direction_triangle(Point* a, Point* b, Point* c) {
 int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
     Vertex* new_entry;
     Polygone* poly = &(convex->poly);
-    Vertex *vtx, *vtx1, *vtx2;
+    Vertex *vtx, *vtx1;
 
     if (convex->current_len < 2) {
         new_entry = GEN_new_vertex_pointer(point);
@@ -51,7 +48,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
     CIRCLEQ_FOREACH(vtx, poly, entries) {
         vtx1 = CIRCLEQ_TRUE_NEXT(poly, vtx);
 
-        if (IS_DIRECT_TRIANGLE(point, vtx->p, vtx1->p))
+        if (IS_DIRECT_TRIANGLE(*point, *vtx->p, *vtx1->p))
             continue;
 
         new_entry = GEN_new_vertex_pointer(point);
@@ -62,7 +59,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
 
         int n_deleted = 0;
         n_deleted = CVH_cleaning(convex, reste);
-        printf("Nombre de points supprimés: %d\n", n_deleted);
+        // printf("Nombre de points supprimés: %d\n", n_deleted);
         
         return 1;
     }
@@ -84,33 +81,48 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
     Vertex *vtx, *vtx1, *vtx2;
     Polygone* poly = &(convex->poly);
 
-    CIRCLEQ_FOREACH(vtx, poly, entries) {
+    #ifdef DEBUG_CVH_CLEANING
+    fprintf(stderr, "Itération avant :\n");
+    #endif
+
+    for (vtx = CIRCLEQ_FIRST(poly); ;) {
         vtx1 = CIRCLEQ_TRUE_NEXT(poly, vtx);
         vtx2 = CIRCLEQ_TRUE_NEXT(poly, vtx1);
 
-        if (!IS_DIRECT_TRIANGLE(vtx->p, vtx1->p, vtx2->p)) {
+        #ifdef DEBUG_CVH_CLEANING
+        GFX_draw_debug_triangle_direction(convex, *vtx->p, *vtx1->p, *vtx2->p);
+        #endif
+
+        if (!IS_DIRECT_TRIANGLE(*vtx->p, *vtx1->p, *vtx2->p)) {
             CIRCLEQ_REMOVE(poly, vtx1, entries);
-            vtx = CIRCLEQ_TRUE_PREV(poly, CIRCLEQ_TRUE_PREV(poly, vtx));
             CIRCLEQ_INSERT_TAIL(reste, vtx1, entries);
             deleted_points++;
         }
         else {
-            CIRCLEQ_SET_AS_FIRST(&(convex->poly), vtx, entries);
+            CIRCLEQ_SET_AS_FIRST(poly, vtx, entries);
             break;
         }
     }
-    CIRCLEQ_FOREACH_REVERSE(vtx, poly, entries) {
+
+    #ifdef DEBUG_CVH_CLEANING
+    fprintf(stderr, "Itération arrière :\n");
+    #endif
+
+    for (vtx = CIRCLEQ_FIRST(poly); ;) {
         vtx1 = CIRCLEQ_TRUE_PREV(poly, vtx);
         vtx2 = CIRCLEQ_TRUE_PREV(poly, vtx1);
 
-        if (!IS_DIRECT_TRIANGLE(vtx->p, vtx2->p, vtx1->p)) {
+        #ifdef DEBUG_CVH_CLEANING
+        GFX_draw_debug_triangle_direction(convex, *vtx->p, *vtx2->p, *vtx1->p);
+        #endif
+
+        if (!IS_DIRECT_TRIANGLE(*vtx->p, *vtx2->p, *vtx1->p)) {
             CIRCLEQ_REMOVE(poly, vtx1, entries);
-            vtx = CIRCLEQ_TRUE_NEXT(poly, CIRCLEQ_TRUE_NEXT(poly, vtx));
             CIRCLEQ_INSERT_TAIL(reste, vtx1, entries);
             deleted_points++;
         }
-        /*else
-            break;*/
+        else
+            break;
     }
     convex->current_len -= deleted_points;
     return deleted_points;
