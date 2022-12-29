@@ -19,10 +19,10 @@ int main(void) {
 
     srand(time(NULL));
     //GEN_rectangle(&points, largeur_fenetre, hauteur_fenetre, 2000);
-    GEN_cercle(&points, largeur_fenetre, hauteur_fenetre, 2000, 200, 1);
+    //GEN_cercle(&points, largeur_fenetre, hauteur_fenetre, 1000, 225, 1);
     //GEN_carre(&points, largeur_fenetre, hauteur_fenetre, 1000, 200);
 
-    CVH_points_to_convex(&points, convex, &reste, GFX_animate_points_to_convex);
+    //CVH_points_to_convex(&points, convex, &reste, GFX_animate_points_to_convex);
     while (1) {
         MLV_clear_window(MLV_COLOR_WHITE);
         GFX_plot_points(&reste, MLV_COLOR_BLUE);
