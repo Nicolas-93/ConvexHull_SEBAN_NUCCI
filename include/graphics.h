@@ -11,6 +11,7 @@ typedef struct {
     int x; /**< Position x du clic */
     int y; /**< Position y du clic */
     MLV_Mouse_button button; /**< Type du clic : Gauche, Milleu, Droit */
+    MLV_Button_state state; /**< Etat du clic */
 } MouseEv;
 
 void GFX_plot_points(ListPoint* points, MLV_Color color);

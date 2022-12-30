@@ -8,7 +8,7 @@
             "program": "${workspaceFolder}/build/demo",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build",
             "environment": [
                 {
                     "name": "DDISPLAY",

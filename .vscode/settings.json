@@ -7,7 +7,8 @@
         "linkage.h": "c",
         "stdio.h": "c",
         "generation.h": "c",
-        "graphics.h": "c"
+        "graphics.h": "c",
+        "queue.h": "c"
     },
     "git.autoRepositoryDetection": "openEditors",
     "git.ignoredRepositories": ["doc/doxygen-awesome-css"]
