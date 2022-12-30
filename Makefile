@@ -1,26 +1,26 @@
-DEBUG_CVH_CLEANING=no
-
-.PHONY: clean
+DEBUG?=no
+DEBUG_CVH_CLEANING?=no
 
 # Définition des variables
 CC=clang
-CFLAGS=-fdiagnostics-color=always -g -Wall -pedantic -std=c17
+BUILD_DIR=build
+SRC_DIR=src
 INCLUDE=-Iinclude
 LIBS=-lMLV -lm
-SRC_DIR=src
-BUILD_DIR=build
-EXEC=demo
-
+CFLAGS=-fdiagnostics-color=always -Wall -pedantic -std=c17
 SOURCES=$(wildcard $(SRC_DIR)/*.c)
 # "Substitution reference" / patsubst
 OBJECTS=$(SOURCES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
-$(info $(OBJECTS))
+# $(info $(OBJECTS))
 
+ifeq ($(DEBUG), yes)
+	CFLAGS += -g
+endif
 ifeq ($(DEBUG_CVH_CLEANING), yes)
-	CFLAGS:=$(CFLAGS) -DDEBUG_CVH_CLEANING
+	CFLAGS += -DDEBUG_CVH_CLEANING
 endif
 
-all: $(EXEC)
+all: demo
 
 # Cible par défaut : l'exécutable demo
 demo: $(OBJECTS)
@@ -33,3 +33,5 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 
 clean:
 	rm $(BUILD_DIR)/*.o $(BUILD_DIR)/demo
+
+.PHONY: clean all
