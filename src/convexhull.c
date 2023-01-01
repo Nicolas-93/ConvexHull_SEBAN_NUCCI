@@ -139,6 +139,9 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
  * @param convex Adresse de l'objet ConvexHull initialisé.
  * @param reste Adresse de la liste des points auquel seront
  * ajoutés les points n'appartenant pas au polygône convexe.
+ * @param callback Fonction à appeler après chaque ajout de point,
+ * prenant en paramètre l'objet ConvexHull et l'adresse de
+ * la liste de points ``reste``.
  */
 void CVH_points_to_convex(
     ListPoint* points,
@@ -155,10 +158,9 @@ void CVH_points_to_convex(
             new_entry = GEN_new_vertex_pointer(vtx->p);
             CIRCLEQ_INSERT_HEAD(reste, new_entry, entries);
         }
-        if(callback)
+        if (callback)
             callback(convex, reste);
     }
-
 }
 
 /**

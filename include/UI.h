@@ -61,17 +61,27 @@ typedef struct {
 Buttons UI_init_buttons(
     int lignes, int colonnes,
     Rect grille_pos, Grille* grille_base,
-    int carre
+    bool carre
 );
 void UI_free_buttons(Buttons* buttons);
 void UI_add_button(Buttons* buttons, Button button);
-int UI_test_button(MouseEv mouse, Button* b);
-void UI_draw_button(Button* button, int survole);
+bool UI_test_button(MouseEv mouse, Button* b);
+void UI_draw_button(Button* button, bool survole);
 int UI_draw_buttons(Buttons* buttons, MouseEv ev);
 int UI_test_buttons(Buttons* buttons, MouseEv ev);
 MouseEv UI_wait_mouse_ev();
 
+/**
+ * @brief Détermine si l'évènement souris est un clic
+ * 
+ */
 #define IS_CLICK(ev) (ev.button == MLV_BUTTON_LEFT && ev.state == MLV_PRESSED)
+
+/**
+ * @brief Détermine si l'évènement souris ``ev`` est un clic
+ * et si ``id_button_clicked`` correspond à ``id_button``
+ * 
+ */
 #define IS_CLICKED(ev, id_button_clicked, id_button) (IS_CLICK(ev) && (id_button_clicked == id_button))
 
 #define DEFAULT_BARE(...) ((BareButton) { \

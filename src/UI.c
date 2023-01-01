@@ -1,14 +1,29 @@
 #include <stdio.h>
 #include <MLV/MLV_all.h>
+#include <stdbool.h>
 #include "Grille.h"
 #include "UI.h"
 
 #define CHUCK_SIZE 5
 
+/**
+ * @brief Initialise une liste de boutons, qui seront
+ * positionnés selon une grille.
+ * Une grille est automatiquement initialisée avec n lignes
+ * et p colonnes, si grille_base est nul. 
+ * 
+ * @param lignes Nombre de lignes de la grille à générer
+ * @param colonnes Nombre de colonnes de la grille à générer
+ * @param grille_pos Désigne la position absolue de la grille dans la fenêtre
+ * @param grille_base Optionnel, permet d'utiliser une grille existante
+ * @param carre Définit si la grille doit être carrée ou étirée par
+ * rapport à la fenêtre
+ * @return Buttons 
+ */
 Buttons UI_init_buttons(
     int lignes, int colonnes,
     Rect grille_pos, Grille* grille_base,
-    int carre
+    bool carre
 ){
     Buttons buttons = {.len = 0, .capacity = CHUCK_SIZE};
 
@@ -28,6 +43,22 @@ Buttons UI_init_buttons(
     return buttons;
 }
 
+/**
+ * @brief Libère la mémoire allouée pour une liste de boutons.
+ * 
+ * @param buttons 
+ */
+void UI_free_buttons(Buttons* buttons) {
+    Grille_free(buttons->grille);
+    free(buttons);
+}
+
+/**
+ * @brief Ajoute un élément de type bouton à la liste.
+ * 
+ * @param buttons L'instance contenant la liste de boutons
+ * @param button Le bouton à ajouter
+ */
 void UI_add_button(Buttons* buttons, Button button) {
     Rect* relative = &button.bare.relative;
     Rect* absolute = &button.bare.absolute;
@@ -54,7 +85,14 @@ void UI_add_button(Buttons* buttons, Button button) {
     buttons->buttons[buttons->len++] = button;
 }
 
-void UI_draw_button(Button* button, int survole) {
+/**
+ * @brief Affiche un bouton.
+ * 
+ * @param button L'adresse du bouton
+ * @param survole Indique si le bouton à été survolé,
+ * et adapte sa couleur.
+ */
+void UI_draw_button(Button* button, bool survole) {
     MLV_Color fill_color, fill_color_hovered, text_color;
     char* text;
 
@@ -112,7 +150,14 @@ void UI_draw_button(Button* button, int survole) {
     );
 }
 
-int UI_test_button(MouseEv mouse, Button* b) {
+/**
+ * @brief Teste si le bouton a été survolé.
+ * 
+ * @param mouse Evénement souris
+ * @param b L'adresse du bouton
+ * @return bool 
+ */
+bool UI_test_button(MouseEv mouse, Button* b) {
     return (
         (mouse.x >= b->bare.absolute.ax &&
          mouse.x <= b->bare.absolute.bx)
@@ -122,22 +167,37 @@ int UI_test_button(MouseEv mouse, Button* b) {
     );
 }
 
+/**
+ * @brief Affiche les boutons de l'instance.
+ * 
+ * @param buttons L'adresse de l'instance de boutons
+ * @param ev L'évenement souris
+ * @return int 
+ */
 int UI_draw_buttons(Buttons* buttons, MouseEv ev) {
     int id_button = 0;
-    short hovered = 0;
-    short has_hovered = 0;
+    bool hovered;
+    bool has_hovered = false;
     for (int i = 0; i < buttons->len; ++i) {
-        hovered = 0;
+        hovered = false;
         Button* button = &buttons->buttons[i];
         if (!has_hovered && (hovered = UI_test_button(ev, button))) {
             id_button = button->bare.id;
-            has_hovered = 1;
+            has_hovered = true;
         }
         UI_draw_button(button, hovered);
     }
     return id_button;
 }
 
+/**
+ * @brief Teste tous les boutons et renvoie l'identificateur de celui
+ * ayant été cliqué. 
+ * 
+ * @param buttons L'adresse de l'instance de boutons
+ * @param ev L'évenement souris
+ * @return int L'identificateur du bouton, 0 sinon
+ */
 int UI_test_buttons(Buttons* buttons, MouseEv ev) {
     if (!IS_CLICK(ev))
         return NONE;
@@ -153,6 +213,11 @@ int UI_test_buttons(Buttons* buttons, MouseEv ev) {
     return NONE;
 }
 
+/**
+ * @brief Attend un mouvement ou un clic de souris.
+ * 
+ * @return MouseEv
+ */
 MouseEv UI_wait_mouse_ev() {
     MouseEv mouse;
     MLV_wait_event(

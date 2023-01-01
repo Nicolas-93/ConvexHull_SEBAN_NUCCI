@@ -4,20 +4,27 @@
 #include "Grille.h"
 #include <MLV/MLV_all.h>
 
+/**
+ * @brief 
+ * Crée une grille de taille colonnes et lignes, positionnée selon
+ * ``grille_position`` aux positions absolues de la fenêtre si
+ * ``grille_base`` vaut NULL, sinon relativement à ``grille_base``.
+ * par rapport aux cordonéees demandées, 
+ * @param nb_colonne Nombre de colonnes
+ * @param nb_ligne Nombre de lignes
+ * @param reduc_coeff Coefficient de marge
+ * @param grille_base Optionnel, grille de référence.
+ * @param grille_position Position absolue de la grille dans la fenêtre,
+ * ou position relative à ``grille_base``.
+ * @param carre Spécifie si la grille doit être carée ou étirée
+ * @param filled_color Couleur d'arrière plan des cases
+ * @param color_border Couleur des bordures des cases
+ * @return Grille* Instance de grille
+ */
 Grille* Grille_init(int nb_colonne, int nb_ligne,
                     float reduc_coeff,
                     Grille* grille_base, Rect grille_position, int carre,
-                    MLV_Color filled_color, MLV_Color color_border) {
-
-    /*
-    Crée une grille de taille colonnes et lignes, positionnée selon ``grille_position``
-    aux positions absolues de la fenêtre si ``grille_base`` vaut NULL,
-    sinon relativement à cette grille.
-    L'argument ``reduc_coeff`` permet de laiser une marge à cette grille
-    par rapport aux cordonéees demandées, ``carre`` permet de forcer à
-    ne pas être étirées.
-    */
-    
+                    MLV_Color filled_color, MLV_Color color_border) {    
     Grille* grille = malloc(sizeof(Grille));
     if (grille == NULL)
         return NULL;
@@ -51,21 +58,43 @@ Grille* Grille_init(int nb_colonne, int nb_ligne,
     return NULL;
 }
 
+/**
+ * @brief Libère l'espace alloué pour la grille.
+ * 
+ * @param grille Adresse de la grille
+ */
 void Grille_free(Grille* grille) {
-    /*
-    Libère l'espace alloué pour la grille
-    */
     for (int i = 0; i < grille->nb_colonne; ++i) {
         free(grille->cases[i]);
     }
     free(grille->cases);
 }
 
+/**
+ * @brief Ecrit dans res_x et res_y, les coordonnées du sommet
+ * Haut-Gauche de la case.
+ * 
+ * @param grille Adresse de la grille
+ * @param case_x 
+ * @param case_y 
+ * @param res_x 
+ * @param res_y 
+ */
 void Grille_getAbsoluteCoordsTL(Grille* grille, int case_x, int case_y, int* res_x, int* res_y) {
     *res_x = grille->cases[case_y][case_x].pos.ax;
     *res_y = grille->cases[case_y][case_x].pos.ay;
 }
 
+/**
+ * @brief Ecrit dans res_x et res_y, les coordonnées du sommet
+ * Bas-Droit de la case.
+ * 
+ * @param grille Adresse de la grille
+ * @param case_x 
+ * @param case_y 
+ * @param res_x 
+ * @param res_y 
+ */
 void Grille_getAbsoluteCoordsBR(Grille* grille, int case_x, int case_y, int* res_x, int* res_y) {
     *res_x = grille->cases[case_y][case_x].pos.bx;
     *res_y = grille->cases[case_y][case_x].pos.by;
@@ -130,11 +159,12 @@ float min(float x, float y) {
     return x < y ? x : y;
 }
 
+/**
+ * @brief Affiche la grille avec des lignes.
+ * 
+ * @param grille Adresse de la grille
+ */
 void Grille_draw_v1(Grille* grille) {
-    /*
-    Dessine une grille par des lignes.
-    */
-
     // Draw columns
     int i, j;
 
@@ -170,6 +200,11 @@ void Grille_draw_v1(Grille* grille) {
     );
 }
 
+/**
+ * @brief Affiche la grille avec des rectangles remplis
+ * 
+ * @param grille 
+ */
 void Grille_draw_v2(Grille* grille) {
     for (int i = 0; i < grille->nb_ligne; ++i) {
         for (int j = 0; j < grille->nb_colonne; ++j) {
@@ -182,10 +217,17 @@ void Grille_draw_v2(Grille* grille) {
     }
 }
 
+/**
+ * @brief Affiche un rectangle avec des coordonées absolues
+ * par rapport à la fenêtre
+ * 
+ * @param ax 
+ * @param ay 
+ * @param bx 
+ * @param by 
+ * @param color 
+ */
 void Grille_draw_filled_rectangle_absolute(int ax, int ay, int bx, int by, MLV_Color color) {
-    /*
-    Dessine un rectangle en coordonnées absolues.
-    */
     MLV_draw_filled_polygon(
         (int []) {ax, bx, bx, ax},
         (int []) {ay, ay, by, by},
