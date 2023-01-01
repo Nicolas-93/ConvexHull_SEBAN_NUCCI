@@ -42,6 +42,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
         new_entry = GEN_new_vertex_pointer(point);
         CIRCLEQ_INSERT_TAIL(poly, new_entry, entries);
         convex->current_len++;
+        convex->max_len++;
         return 1;
     }
 
@@ -59,7 +60,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
 
         CVH_cleaning(convex, reste);
         // printf("Nombre de points supprimés: %d\n", n_deleted);
-        
+
         return 1;
     }
     return 0;
@@ -124,6 +125,10 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
             break;
     }
     convex->current_len -= deleted_points;
+
+    if (convex->current_len > convex->max_len)
+        convex->max_len = convex->current_len;
+
     return deleted_points;
 }
 

@@ -4,8 +4,8 @@
         {
             "type": "cppbuild",
             "label": "Build demo with make",
-            "command": "/usr/bin/make",
-            "args": ["-j6", "DEBUG=yes", "DEBUG_CVH_CLEANING=yes"],
+            "command": "make",
+            "args": ["-j6", "DEBUG=yes", "DEBUG_CVH_CLEANING=no"],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -16,7 +16,22 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "Build convexhull demo with make."
+            "detail": "Build convexhull demo with make.",
+            "dependsOrder": "sequence",
+            "dependsOn": ["Clean project"]
+        },
+        {
+            "type": "shell",
+            "label": "Clean project",
+            "command": "/usr/bin/make",
+            "args": ["clean"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Clean build files"
         },
         {
             "type": "cppbuild",

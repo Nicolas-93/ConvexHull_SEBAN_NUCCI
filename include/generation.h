@@ -1,11 +1,17 @@
 #ifndef GENERATION_H
 #define GENERATION_H
 #include <sys/queue.h>
+#include <stdbool.h>
 
 typedef struct {
     double x;
     double y;
 } Point;
+
+typedef struct {
+    Point p;
+    double dist;
+} PointDistance;
 
 typedef struct Vertex {
     Point* p;
@@ -25,8 +31,15 @@ typedef struct {
 } ConvexHull;
 
 void GEN_rectangle(ListPoint* points, int largeur, int hauteur, int nb_points);
-void GEN_cercle(ListPoint* points, int largeur, int hauteur, int nb_points, int r_max, int croissant);
+int GEN_cercle(
+    ListPoint* points,
+    int largeur, int hauteur,
+    int nb_points, int r_max, double concentration, bool tri
+);
 void GEN_carre(ListPoint* points, int largeur, int hauteur, int nb_points, int r_max);
+double GEN_distance(double ax, double ay, double bx, double by);
+int GEN_compare_point_distance(const void* a, const void* b);
+void GEN_sort_tab_PointDistance_to_ListPoint(PointDistance* tab_points, int size, ListPoint* points);
 Vertex* GEN_new_vertex(Point point);
 Vertex* GEN_new_vertex_pointer(Point* point);
 double rand_double(double n);

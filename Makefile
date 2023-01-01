@@ -32,6 +32,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(INCLUDE) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm $(BUILD_DIR)/*.o $(BUILD_DIR)/demo
+	rm -f $(BUILD_DIR)/*.o $(BUILD_DIR)/demo
 
 .PHONY: clean all
