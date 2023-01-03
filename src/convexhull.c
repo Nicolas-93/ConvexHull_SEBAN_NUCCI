@@ -187,6 +187,10 @@ Point* CVH_add_user_point(ListPoint* points, Point point) {
  * @return int 
  */
 int CVH_add_to_convex(ConvexHull* convex, Point* point, ListPoint* reste) {
+    if (convex->current_len == 1) {
+        point->x += 1e-12;
+        point->y += 1e-12;
+    }
     int added = CVH_add(point, convex, reste);
     if (!added) {
         Vertex* new_entry = GEN_new_vertex_pointer(point);
