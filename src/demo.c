@@ -6,10 +6,12 @@
 #include "generation.h"
 #include "graphics.h"
 #include "convexhull.h"
+#include "args.h"
 
-int main(void) {
-    int largeur_fenetre = 500, hauteur_fenetre = 500;
-    MLV_create_window("Convex Hull", "", largeur_fenetre, hauteur_fenetre);
+
+int main(int argc, char* argv[]) {
+    Parameters params = parse_args(argc, argv);
+    MLV_create_window("Convex Hull", "", params.window.width, params.window.height);
 
     ConvexHull* convex = CVH_init_convexhull();
     ListPoint points, reste;
@@ -20,7 +22,11 @@ int main(void) {
 
     srand(time(NULL));
     //GEN_rectangle(&points, largeur_fenetre, hauteur_fenetre, 2000);
-    GEN_cercle(&points, largeur_fenetre, hauteur_fenetre, 1000, 200, 3, true);
+    GEN_cercle(&points,
+        params.window.width, params.window.height,
+        params.gen.nb_points, params.gen.rayon,
+        params.gen.concentration, params.gen.progressif
+    );
     //GEN_carre(&points, largeur_fenetre, hauteur_fenetre, 1000, 200);
 
     CVH_points_to_convex(&points, convex, &reste, GFX_animate_points_to_convex);

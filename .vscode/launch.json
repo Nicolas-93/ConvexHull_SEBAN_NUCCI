@@ -6,7 +6,14 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/demo",
-            "args": [],
+            "args": [
+                "--window", "400x500",
+                "-n", "1000",
+                "--concentration", "2",
+                "--radius", "200",
+                "--thickness", "1",
+                "--progressive"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",
             "environment": [

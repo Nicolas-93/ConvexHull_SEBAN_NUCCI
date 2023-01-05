@@ -15,7 +15,7 @@ void GFX_plot_points(ListPoint* points, MLV_Color color) {
         MLV_draw_filled_circle(
             entry->p->x,
             entry->p->y,
-            2,
+            4,
             color
         );
     }
