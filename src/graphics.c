@@ -79,18 +79,18 @@ void GFX_draw_debug_triangle_direction(ConvexHull* convex, Point a, Point b, Poi
 }
 
 /**
- * @brief Attend un clic de souris et renvoie le type du clic
+ * @brief Attend un évènement et le renvoie
  * 
- * @return MouseEv 
+ * @return MLV_Ev 
  */
-MouseEv GFX_wait_mouse_ev() {
-    MouseEv mouse;
-    MLV_Button_state state;
-    while ((MLV_wait_event(
-                NULL, NULL, NULL,
-                NULL, NULL,
-                &mouse.x, &mouse.y,
-                &mouse.button, &state
-            ) != MLV_MOUSE_BUTTON) || state != MLV_PRESSED);
-    return mouse;
+MLV_Ev GFX_wait_ev() {
+    MLV_Ev ev = {0};
+
+    ev.type = MLV_wait_event(
+        &ev.key_btn, NULL, NULL,
+        NULL, NULL,
+        &ev.x, &ev.y,
+        &ev.button, &ev.state
+    );
+    return ev;
 }

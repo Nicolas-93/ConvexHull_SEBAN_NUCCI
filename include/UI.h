@@ -65,11 +65,11 @@ Buttons UI_init_buttons(
 );
 void UI_free_buttons(Buttons* buttons);
 void UI_add_button(Buttons* buttons, Button button);
-bool UI_test_button(MouseEv mouse, Button* b);
+bool UI_test_button(MLV_Ev mouse, Button* b);
 void UI_draw_button(Button* button, bool survole);
-int UI_draw_buttons(Buttons* buttons, MouseEv ev);
-int UI_test_buttons(Buttons* buttons, MouseEv ev);
-MouseEv UI_wait_mouse_ev();
+int UI_draw_buttons(Buttons* buttons, MLV_Ev ev);
+int UI_test_buttons(Buttons* buttons, MLV_Ev ev);
+MLV_Ev UI_wait_mouse_ev();
 
 /**
  * @brief Détermine si l'évènement souris est un clic
@@ -86,14 +86,16 @@ MouseEv UI_wait_mouse_ev();
 
 #define DEFAULT_BARE(...) ((BareButton) { \
         .back_color = MLV_COLOR_GREY, \
-        ##__VA_ARGS__ \
+        __VA_ARGS__ \
     })
 
+#define COLOR_TRANSPARENT MLV_rgba(0, 0, 0, 0)
+
 #define DEFAULT_TEXT(...) ((TextButton) { \
-        .text_color         = MLV_COLOR_RED, \
+        .text_color         = MLV_COLOR_BLACK, \
         .back_color_hovered = MLV_COLOR_GREY50, \
         .hoverable = 1, \
-        ##__VA_ARGS__ \
+        __VA_ARGS__ \
     })
 
 #define DEFAULT_BOOLEAN(...) ((BooleanButton) { \
@@ -102,7 +104,7 @@ MouseEv UI_wait_mouse_ev();
         .active_color_hovered   = MLV_rgba(11, 79, 52, 255), \
         .inactive_color         = MLV_rgba(207, 14, 14, 255), \
         .inactive_color_hovered = MLV_rgba(148, 16, 16, 255), \
-        ##__VA_ARGS__ \
+        __VA_ARGS__ \
     })
 
 #endif

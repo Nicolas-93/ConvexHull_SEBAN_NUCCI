@@ -26,15 +26,29 @@ typedef CIRCLEQ_HEAD(ListPoint, Vertex) ListPoint;
  */
 typedef struct {
     Polygone poly;   /**< Le polygône (liste doublement chainée circulaire) */
-    int current_len; /**< Nombre de points du polygône*/
-    int max_len;     /**< Nombre maximum de points que le polygône à géré*/
+    int current_len; /**< Nombre de points du polygône */
+    int max_len;     /**< Nombre maximum de points que le polygône à géré */
 } ConvexHull;
 
 void GEN_rectangle(ListPoint* points, int largeur, int hauteur, int nb_points);
-int GEN_cercle(
+Point GEN_formule_carre_uniforme(
+    int largeur, int hauteur,
+    int i, int nb_points, int r_max, double concentration
+);
+Point GEN_formule_carre_croissant(
+    int largeur, int hauteur,
+    int i, int nb_points, int r_max, double concentration
+);
+Point GEN_formule_cercle(
+    int largeur, int hauteur,
+    int i, int nb_points, int r_max, double concentration
+);
+
+int GEN_points_formule(
     ListPoint* points,
     int largeur, int hauteur,
-    int nb_points, int r_max, double concentration, bool tri
+    int nb_points, int r_max, double concentration, bool tri,
+    Point (*formule) (int, int, int, int, int, double)
 );
 void GEN_carre(ListPoint* points, int largeur, int hauteur, int nb_points, int r_max);
 double GEN_distance(double ax, double ay, double bx, double by);
@@ -44,6 +58,8 @@ Vertex* GEN_new_vertex(Point point);
 Vertex* GEN_new_vertex_pointer(Point* point);
 double rand_double(double n);
 double uniform(double a, double b);
+int random_bool();
+int random_direction();
 
 #define CIRCLEQ_TRUE_NEXT(head, elm)\
             ((void*) CIRCLEQ_NEXT(elm, entries) == (void*) head ?\

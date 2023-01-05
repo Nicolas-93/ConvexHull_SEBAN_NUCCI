@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "args.h"
 
+
 void print_help(void) {
     printf(
         "Utilisation : demo\n"
@@ -19,10 +20,14 @@ void print_help(void) {
 Parameters parse_args(int argc, char *argv[]) {
     static Parameters params = {
       .window.width = 500, .window.height = 500,
-      .gen.nb_points = 1000,
-      .gen.rayon = 200,
-      .gen.concentration = 3,
-      .gen.progressif = 0,
+      .gen = {
+        .shape = CERCLE,
+        .nb_points = 1000,
+        .rayon = 0,
+        .concentration = 3,
+        .progressif = 0,
+        .animation = false
+      },
       .thickness = 3
     };
     static struct option long_options[] = {
@@ -31,6 +36,7 @@ Parameters parse_args(int argc, char *argv[]) {
         {"points",        required_argument, NULL, 'n'},
         {"concentration", required_argument, NULL, 'c'},
         {"progressive",   no_argument,       NULL, 'p'},
+        {"animation",     no_argument,       NULL, 'a'},
         {"thickness",     required_argument, NULL, 't'},
         {"help",          required_argument, NULL, 'h'},
         {0, 0, 0, 0}
@@ -77,12 +83,17 @@ Parameters parse_args(int argc, char *argv[]) {
         case 'p':
             params.gen.progressif = 1;
             break;
+        case 'a':
+            params.gen.animation = true;
         case 'h':
         case '?':
         default:
             print_help();
             exit(EXIT_FAILURE);
         }
+    }
+    if (params.gen.rayon == 0) {
+        params.gen.rayon = min(params.window.width, params.window.height) / 2 - 20;
     }
     return params;
 }

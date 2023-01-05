@@ -2,7 +2,7 @@ DEBUG?=no
 DEBUG_CVH_CLEANING?=no
 
 # Définition des variables
-CC=clang
+CC=gcc
 BUILD_DIR=build
 SRC_DIR=src
 INCLUDE=-Iinclude

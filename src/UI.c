@@ -50,7 +50,7 @@ Buttons UI_init_buttons(
  */
 void UI_free_buttons(Buttons* buttons) {
     Grille_free(buttons->grille);
-    free(buttons);
+    free(buttons->buttons);
 }
 
 /**
@@ -157,7 +157,7 @@ void UI_draw_button(Button* button, bool survole) {
  * @param b L'adresse du bouton
  * @return bool 
  */
-bool UI_test_button(MouseEv mouse, Button* b) {
+bool UI_test_button(MLV_Ev mouse, Button* b) {
     return (
         (mouse.x >= b->bare.absolute.ax &&
          mouse.x <= b->bare.absolute.bx)
@@ -174,7 +174,7 @@ bool UI_test_button(MouseEv mouse, Button* b) {
  * @param ev L'évenement souris
  * @return int 
  */
-int UI_draw_buttons(Buttons* buttons, MouseEv ev) {
+int UI_draw_buttons(Buttons* buttons, MLV_Ev ev) {
     int id_button = 0;
     bool hovered;
     bool has_hovered = false;
@@ -198,7 +198,7 @@ int UI_draw_buttons(Buttons* buttons, MouseEv ev) {
  * @param ev L'évenement souris
  * @return int L'identificateur du bouton, 0 sinon
  */
-int UI_test_buttons(Buttons* buttons, MouseEv ev) {
+int UI_test_buttons(Buttons* buttons, MLV_Ev ev) {
     if (!IS_CLICK(ev))
         return NONE;
     for (int i = 0; i < buttons->len; ++i) {
@@ -211,20 +211,4 @@ int UI_test_buttons(Buttons* buttons, MouseEv ev) {
         }
     }
     return NONE;
-}
-
-/**
- * @brief Attend un mouvement ou un clic de souris.
- * 
- * @return MouseEv
- */
-MouseEv UI_wait_mouse_ev() {
-    MouseEv mouse;
-    MLV_wait_event(
-        NULL, NULL, NULL,
-        NULL, NULL,
-        &mouse.x, &mouse.y,
-        &mouse.button, &mouse.state
-    );
-    return mouse;
 }

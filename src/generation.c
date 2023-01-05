@@ -6,38 +6,54 @@
 
 #define PI 3.14159265358979323846
 
+/**
+ * @brief Renvoie un nombre aléatoire entre 0 et n.
+ * 
+ * @param n 
+ * @return double 
+ */
 inline double rand_double(double n) {
     return (double)rand() / (double)(RAND_MAX / n);
 }
 
+/**
+ * @brief Renvoie un nombre aléatoire entre a et b.
+ * 
+ * @param a 
+ * @param b 
+ * @return double 
+ */
 inline double uniform(double a, double b) {
     return a + (b - a) * rand_double(1);
 }
-
 /**
- * @brief Génère une liste aléatoire de points dans la fenêtre.
- * Si une erreur survient pendant l'allocation, le programme est arrêté.
- * @param points Adresse de la liste où seront ajoutés les points.
- * @param largeur Largeur de la fenêtre.
- * @param hauteur Hauteur de la fenêtre.
- * @param nb_points Nombre de points à génerer.
+ * @brief Renvoie un booléen aléatoire.
+ * 
+ * @return int 
  */
-void GEN_rectangle(ListPoint* points, int largeur, int hauteur, int nb_points) {
-    CIRCLEQ_INIT(points);
-
-    for (int i = 0; i < nb_points; ++i) {
-        Vertex* new_entry = GEN_new_vertex((Point) {
-            rand() % largeur,
-            rand() % hauteur
-        });
-        if (!new_entry) {
-            fprintf(stderr, "Erreur lors de l'allocation des points. Arrêt...\n");
-            exit(1);
-        }
-        CIRCLEQ_INSERT_TAIL(points, new_entry, entries);
-    }
+inline int random_bool() {
+    return rand() > (RAND_MAX / 2);
 }
 
+/**
+ * @brief Renvoie aléatoirement un entier négatif
+ * ou positif.
+ * 
+ * @return int 
+ */
+inline int random_direction() {
+    return random_bool() == 0 ? -1 : 1;
+}
+
+/**
+ * @brief Fonction de comparaison de distance entre deux points.
+ * 
+ * @param ax 
+ * @param ay 
+ * @param bx 
+ * @param by 
+ * @return double 
+ */
 double inline GEN_distance(double ax, double ay, double bx, double by) {
     double comp_x = (bx - ax);
     double comp_y = (by - ay);
@@ -47,15 +63,15 @@ double inline GEN_distance(double ax, double ay, double bx, double by) {
 int inline GEN_compare_point_distance(const void* a, const void* b) {
     return ((PointDistance*) a)->dist - ((PointDistance*) b)->dist;
 }
-
 /**
- * @brief Génère un ensemble de points sur un disque.
+ * @brief Génère un point dans un cercle.
  * 
- * @param points Adresse de la liste de points où les points seront stockés
- * @param largeur Largeur de la fenêtre
- * @param hauteur Hauteur de la fenêtre
- * @param nb_points Nombre de points à générer
- * @param r_max Rayon du cercle
+ * @param points Adresse de la liste de points où les points seront stockés.
+ * @param largeur Largeur de la fenêtre.
+ * @param hauteur Hauteur de la fenêtre.
+ * @param i Itérateur de la boucle sur nb_points.
+ * @param nb_points Nombre de points à générer.
+ * @param r_max Rayon du cercle.
  * @param concentration
  * Cas :
  * - Si < 0 : Les points vont être générés à l'extérieur du cercle,
@@ -65,19 +81,87 @@ int inline GEN_compare_point_distance(const void* a, const void* b) {
  * en tendant vers ce dernier
  * - Si = 1 : Les points seront distribués uniformément
  * - Si > 1 : Les points tendront vers le centre du cercle
+ */
+Point GEN_formule_cercle(
+    int largeur, int hauteur,
+    int i, int nb_points, int r_max, double concentration
+) {
+    int offset_x = largeur / 2, offset_y = hauteur / 2;
+    double rnd, rayon, angle;
+    Point p;
+    rnd = rand_double(1);
+    rayon = sqrt(pow(rnd, concentration));
+    angle = 2 * PI * rand_double(1);
+    rayon *= r_max;
+    p.x = rayon * cos(angle) + offset_x;
+    p.y = rayon * sin(angle) + offset_y;
+
+    return p;
+}
+
+/**
+ * @brief Génère un point dans un carré uniforme.
+ * 
+ * @return Point 
+ */
+Point GEN_formule_carre_uniforme(
+    int largeur, int hauteur,
+    int i, int nb_points, int r_max, double concentration
+) {
+    int offset_x = largeur / 2, offset_y = hauteur / 2;
+    Point p;
+    p.x = uniform(-r_max, r_max) + offset_x;
+    p.y = uniform(-r_max, r_max) + offset_y;
+
+    return p;
+}
+
+/**
+ * @brief Génère un point d'un carré croissant, en utilisant
+ * l'itérateur de la boucle de la fonction appelante. 
+ * 
+ * @return Point 
+ */
+Point GEN_formule_carre_croissant(
+    int largeur, int hauteur,
+    int i, int nb_points, int r_max, double concentration
+) {
+    double dist_inc = ((double) r_max / (double) nb_points) * i;
+    double a_x = -dist_inc, a_y = -dist_inc, b_x = dist_inc, b_y = dist_inc;
+    int offset_x = largeur / 2;
+    int offset_y = hauteur / 2;
+
+    Point p;
+    p.x = uniform(a_x, b_x) + offset_x;
+    p.y = uniform(a_y, b_y) + offset_y;
+
+    return p;
+}
+
+/**
+ * @brief Génère un ensemble de points sur un disque, selon
+ * un mode génération fourni par une fonction en paramètre.
+ * 
+ * @param points Adresse de la liste de points où les points seront stockés.
+ * @param largeur Largeur de la fenêtre.
+ * @param hauteur Hauteur de la fenêtre.
+ * @param nb_points Nombre de points à générer.
+ * @param r_max Rayon de l'ensemble.
+ * @param concentration 
  * @param tri Spécifie si la liste doit être triée en fonction
  * de la distance des points par rapport à l'origine du cercle.
+ * @param formule Fonction à appeler pour générer un point d'un ensemble.
  * @return 0 si une erreur est survenue pendant l'allocation des points,
  * 1 sinon.
  */
-int GEN_cercle(
+int GEN_points_formule(
     ListPoint* points,
     int largeur, int hauteur,
-    int nb_points, int r_max, double concentration, bool tri
+    int nb_points, int r_max, double concentration, bool tri,
+    Point (*formule) (int, int, int, int, int, double)
 ) {
     PointDistance* tab_points = NULL;
     int offset_x = largeur / 2, offset_y = hauteur / 2;
-    double rnd, rayon, angle;
     CIRCLEQ_INIT(points);
     if (tri) {
         tab_points = malloc(nb_points * sizeof(PointDistance));
@@ -86,13 +170,11 @@ int GEN_cercle(
     }
 
     for (int i = 0; i < nb_points; ++i) {
-        Point p;
-        rnd = rand_double(1);
-        rayon = sqrt(pow(rnd, concentration));
-        angle = 2 * PI * rand_double(1);
-        rayon *= r_max;
-        p.x = rayon * cos(angle) + offset_x;
-        p.y = rayon * sin(angle) + offset_y;
+        Point p = formule(
+            largeur, hauteur,
+            i, nb_points,
+            r_max, concentration
+        );
 
         if (tri){
             double dist = GEN_distance(p.x, p.y, offset_x, offset_y);
@@ -113,7 +195,7 @@ int GEN_cercle(
 }
 
 /**
- * @brief Trie un tableau de PointDistance, et le copie dans une ListePoint
+ * @brief Trie un tableau de PointDistance, et le copie dans une ListePoint.
  * 
  * @param tab_points Tableau de PointDistance
  * @param size Taille du tableau
@@ -126,27 +208,6 @@ void GEN_sort_tab_PointDistance_to_ListPoint(PointDistance* tab_points, int size
         CIRCLEQ_INSERT_TAIL(points, new_entry, entries);
     }
     free(tab_points);
-}
-
-void GEN_carre(ListPoint* points, int largeur, int hauteur, int nb_points, int r_max) {
-    double a_x = 0, a_y = 0, b_x = 0, b_y = 0;
-    double dist_inc = (double) r_max / (double) nb_points;
-    int offset_x = largeur / 2;
-    int offset_y = hauteur / 2;
-    CIRCLEQ_INIT(points);
-
-    for (int i = 1; i < nb_points; i++) {
-        a_x -= dist_inc;
-        a_y -= dist_inc;
-        b_x += dist_inc;
-        b_y += dist_inc;
-        Point p;
-        p.x = uniform(a_x, b_x) + offset_x;
-        p.y = uniform(a_y, b_y) + offset_y;
-        
-        Vertex* new_entry = GEN_new_vertex(p);
-        CIRCLEQ_INSERT_TAIL(points, new_entry, entries);
-    }
 }
 
 /**
