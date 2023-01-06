@@ -245,3 +245,23 @@ Vertex* GEN_new_vertex_pointer(Point* point) {
 
     return new_vtx;
 }
+
+/**
+ * @brief Libére la mémoire allouée pour une liste de points.
+ * 
+ * @param lst Adresse de la liste
+ * @param free_points Spécifie si on libère également
+ * les points alloués.
+ */
+void GEN_free_vertex_list(ListPoint* lst, bool free_points) {
+    Vertex *vtx = CIRCLEQ_FIRST(lst), *vtx2;
+
+    while (vtx != (void*) lst) {
+        vtx2 = CIRCLEQ_NEXT(vtx, entries);
+        if (free_points)
+            free(vtx->p);
+        free(vtx);
+        vtx = vtx2;
+    }
+    CIRCLEQ_INIT(lst);
+}

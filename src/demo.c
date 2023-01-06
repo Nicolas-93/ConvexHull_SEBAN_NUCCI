@@ -41,14 +41,14 @@ void scene_menu(Parameters* params) {
             params->gen.enabled = false;
             scene_demo(*params);
         }
-        else if (IS_CLICKED(mouse, id_button, A_CERCLE) ||
-                 IS_CLICKED(mouse, id_button, A_CARRE)) {
+        else if (IS_CLICKED(mouse, id_button, A_CERCLE)) {
             params->gen.shape = CERCLE;
-            params->gen.enabled = true;
-            scene_demo(*params);
         }
         else if (IS_CLICKED(mouse, id_button, A_CARRE)) {
             params->gen.shape = CARRE;
+        }
+        if (IS_CLICKED(mouse, id_button, A_CARRE)
+         || IS_CLICKED(mouse, id_button, A_CERCLE)) {
             params->gen.enabled = true;
             scene_demo(*params);
         }
@@ -181,8 +181,12 @@ void scene_demo(Parameters params) {
         // break;
         ev = GFX_wait_ev();
         if (ev.type == MLV_KEY) {
-            if (ev.key_btn == MLV_KEYBOARD_ESCAPE)
+            if (ev.key_btn == MLV_KEYBOARD_ESCAPE) {
+                CVH_free_convexhull(convex);
+                GEN_free_vertex_list(&reste, false);
+                GEN_free_vertex_list(&points, true);
                 break;
+            }
         }
         else if (IS_CLICK(ev)) {
             point = CVH_add_user_point(&points, MOUSE_EV_TO_POINT(ev));

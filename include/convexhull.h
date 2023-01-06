@@ -14,6 +14,7 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste);
 Point* CVH_add_user_point(ListPoint* points, Point point);
 int CVH_add_to_convex(ConvexHull* convex, Point* point, ListPoint* reste);
 ConvexHull* CVH_init_convexhull(void);
+void CVH_free_convexhull(ConvexHull* convex);
 
 /**
  * @brief Indique si le triangle est direct

@@ -47,7 +47,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
     }
 
     CIRCLEQ_FOREACH(vtx, poly, entries) {
-        vtx1 = CIRCLEQ_TRUE_NEXT(poly, vtx);
+        vtx1 = CIRCLEQ_LOOP_NEXT(poly, vtx, entries);
 
         if (IS_DIRECT_TRIANGLE(*point, *vtx->p, *vtx1->p))
             continue;
@@ -86,8 +86,8 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
     #endif
 
     for (vtx = CIRCLEQ_FIRST(poly); ;) {
-        vtx1 = CIRCLEQ_TRUE_NEXT(poly, vtx);
-        vtx2 = CIRCLEQ_TRUE_NEXT(poly, vtx1);
+        vtx1 = CIRCLEQ_LOOP_NEXT(poly, vtx, entries);
+        vtx2 = CIRCLEQ_LOOP_NEXT(poly, vtx1, entries);
 
         #ifdef DEBUG_CVH_CLEANING
         GFX_draw_debug_triangle_direction(convex, *vtx->p, *vtx1->p, *vtx2->p);
@@ -109,8 +109,8 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
     #endif
 
     for (; ;) {
-        vtx1 = CIRCLEQ_TRUE_PREV(poly, vtx);
-        vtx2 = CIRCLEQ_TRUE_PREV(poly, vtx1);
+        vtx1 = CIRCLEQ_LOOP_PREV(poly, vtx, entries);
+        vtx2 = CIRCLEQ_LOOP_PREV(poly, vtx1, entries);
 
         #ifdef DEBUG_CVH_CLEANING
         GFX_draw_debug_triangle_direction(convex, *vtx->p, *vtx2->p, *vtx1->p);
@@ -212,4 +212,15 @@ ConvexHull* CVH_init_convexhull(void) {
     CIRCLEQ_INIT(&convex->poly);
     
     return convex;
+}
+
+/**
+ * @brief Libère la mémoire allouée pour un
+ * objet ConvexHull, sans libérer les points.
+ * 
+ * @param convex Adresse de l'instance ConvexHull
+ */
+void CVH_free_convexhull(ConvexHull* convex) {
+    GEN_free_vertex_list((ListPoint*) &convex->poly, 0);
+    free(convex);
 }

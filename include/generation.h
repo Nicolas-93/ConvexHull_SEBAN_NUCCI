@@ -56,18 +56,11 @@ int GEN_compare_point_distance(const void* a, const void* b);
 void GEN_sort_tab_PointDistance_to_ListPoint(PointDistance* tab_points, int size, ListPoint* points);
 Vertex* GEN_new_vertex(Point point);
 Vertex* GEN_new_vertex_pointer(Point* point);
+void GEN_free_vertex_list(ListPoint* lst, bool free_points);
 double rand_double(double n);
 double uniform(double a, double b);
 int random_bool();
 int random_direction();
-
-#define CIRCLEQ_TRUE_NEXT(head, elm)\
-            ((void*) CIRCLEQ_NEXT(elm, entries) == (void*) head ?\
-            CIRCLEQ_FIRST(head) : CIRCLEQ_NEXT(elm, entries))
-
-#define CIRCLEQ_TRUE_PREV(head, elm)\
-            ((void*) CIRCLEQ_PREV(elm, entries) == (void*) head ?\
-            CIRCLEQ_LAST(head) : CIRCLEQ_PREV(elm, entries))
 
 /**
  * @brief Définit un élément comme tête de la liste 

@@ -30,7 +30,7 @@ void GFX_plot_points(ListPoint* points, MLV_Color color) {
 void GFX_draw_polygon(ConvexHull* convex, MLV_Color color) {
     Vertex* vtx;
     CIRCLEQ_FOREACH_REVERSE(vtx, &(convex->poly), entries) {
-        Vertex* vtx1 = CIRCLEQ_TRUE_NEXT(&convex->poly, vtx);
+        Vertex* vtx1 = CIRCLEQ_LOOP_NEXT(&convex->poly, vtx, entries);
         MLV_draw_line(
             vtx->p->x, vtx->p->y,
             vtx1->p->x, vtx1->p->y,
