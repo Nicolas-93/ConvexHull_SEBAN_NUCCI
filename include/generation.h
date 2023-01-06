@@ -30,6 +30,12 @@ typedef struct {
     int max_len;     /**< Nombre maximum de points que le polygône à géré*/
 } ConvexHull;
 
+typedef struct ConvexHullEntry{
+    ConvexHull* convex;
+    CIRCLEQ_ENTRY(ConvexHullEntry) entries;  
+} ConvexHullEntry;
+typedef CIRCLEQ_HEAD(ConvexHulls, ConvexHullEntry) ConvexHulls;
+
 void GEN_rectangle(ListPoint* points, int largeur, int hauteur, int nb_points);
 int GEN_cercle(
     ListPoint* points,
