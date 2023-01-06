@@ -74,4 +74,15 @@ double uniform(double a, double b);
         (head)->cqh_last->field.cqe_next = (void*) (head); \
     } while (0)
 
+/**
+ * @brief Déplace les cellules de head1 dans head2.
+ * 
+ */
+#define CIRCLEQ_MOVE_TO(head1, head2, field)\
+    do { \
+        *(head2) = *(head1); \
+        (head2)->cqh_first->field.cqe_prev = (void*) (head2); \
+        (head2)->cqh_last->field.cqe_next = (void*) (head2); \
+    } while (0) \
+
 #endif

@@ -164,6 +164,36 @@ void CVH_points_to_convex(
 }
 
 /**
+ * @brief Crée une liste de polygones convexes imbriqués.
+ * 
+ * @param points Adresse de la liste des points.
+ * @param convexs Adresse de la liste de polygones convexes
+ * de destination.
+ */
+void CVH_convexhull_inception(ListPoint* points, ConvexHulls* convexs) {
+    ListPoint reste, points2;
+    ConvexHullEntry* convex_entry;
+    ConvexHull* convex;
+    CIRCLEQ_INIT(convexs);
+    CIRCLEQ_INIT(&reste);
+    CIRCLEQ_INIT(&points2);
+    convex = CVH_init_convexhull();
+    convex_entry = malloc(sizeof(ConvexHullEntry));
+    convex_entry->convex = convex;
+    CVH_points_to_convex(points, convex, &reste, NULL);
+    CIRCLEQ_INSERT_TAIL(convexs, convex_entry, entries);
+
+    while (!CIRCLEQ_EMPTY(&reste)) {
+        convex_entry = malloc(sizeof(ConvexHullEntry));
+        convex_entry->convex = convex;
+        convex = CVH_init_convexhull();
+        CIRCLEQ_MOVE_TO(&reste, &points2, entries);
+        CVH_points_to_convex(&points2, convex, &reste, NULL);
+        CIRCLEQ_INSERT_TAIL(convexs, convex_entry, entries);
+    }
+}
+
+/**
  * @brief Ajoute un point à une liste de points.
  * 
  * @param points Adresse de la liste auquel sera ajouté le point.

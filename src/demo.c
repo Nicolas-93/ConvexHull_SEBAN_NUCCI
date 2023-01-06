@@ -8,44 +8,32 @@
 #include "convexhull.h"
 
 int main(void) {
-    int largeur_fenetre = 1000, hauteur_fenetre = 1000;
+    int largeur_fenetre = 500, hauteur_fenetre = 500;
     MLV_create_window("Convex Hull", "", largeur_fenetre, hauteur_fenetre);
 
-    ConvexHull* convex = CVH_init_convexhull();
     ConvexHulls convexs;
-    ListPoint points, reste, points2;
-    ConvexHullEntry* convex_entry = malloc(sizeof(ConvexHullEntry));
-    convex_entry->convex = convex;
-    CIRCLEQ_INIT(&convexs);
-    CIRCLEQ_INIT(&points);
-    CIRCLEQ_INIT(&reste);
-    CIRCLEQ_INIT(&points2);
+    ListPoint points;
     MouseEv mouse;
     Point* point;
 
     srand(time(NULL));
-    GEN_carre(&points, largeur_fenetre, hauteur_fenetre, 150, 500);
-    CVH_points_to_convex(&points, convex, &reste, NULL);
-    CIRCLEQ_INSERT_TAIL(&convexs, convex_entry, entries);
-    while (!CIRCLEQ_EMPTY(&reste)) {
-        GFX_plot_points(&reste, MLV_COLOR_BLUE);
-        GFX_plot_points((ListPoint*) &(convex->poly), MLV_COLOR_RED);
-        GFX_draw_polygon(convex, MLV_COLOR_ORANGE);
+    GEN_carre(&points, largeur_fenetre, hauteur_fenetre, 150, 250);
+
+    CVH_convexhull_inception(&points, &convexs);
+
+    while (1) {
+        MLV_clear_window(MLV_COLOR_WHITE);
+        GFX_plot_points(&points, MLV_COLOR_RED);
+        GFX_draw_polygons(&convexs);
         MLV_actualise_window();
-        convex_entry = malloc(sizeof(ConvexHullEntry));
-        convex_entry->convex = convex;
-        convex = CVH_init_convexhull();
-        points2.cqh_first = reste.cqh_first;
-        points2.cqh_last = reste.cqh_last;
-        points2.cqh_first->entries.cqe_prev = &points2;
-        points2.cqh_last->entries.cqe_next = &points2;
-        CVH_points_to_convex(&points2, convex, &reste, NULL);
-        CIRCLEQ_INSERT_TAIL(&convexs, convex_entry, entries);
+        // break;
+        mouse = GFX_wait_mouse_ev();
 
-
-        //point = CVH_add_user_point(&points, MOUSE_EV_TO_POINT(mouse));
-        //CVH_add_to_convex(convex, point, &reste);
+        point = CVH_add_user_point(&points, MOUSE_EV_TO_POINT(mouse));
+        // CVH_add_to_convex(convex, point, &reste);
     }
+    
+    MLV_actualise_window();
 
     MLV_wait_seconds(10000);
     MLV_free_window();
