@@ -2,7 +2,9 @@
 #include "generation.h"
 #include "graphics.h"
 #include "convexhull.h"
+#include <math.h>
 
+double double_abs(double n);
 /**
  * @brief Affiche les points de la liste sur la fenêtre
  * 
@@ -21,23 +23,62 @@ void GFX_plot_points(ListPoint* points, MLV_Color color) {
     }
 }
 
+MLV_Color GFX_map_color(int n) {
+    n %= 7;
+    const int opacity = 100;
+    switch (n) {
+    case 0:
+        return MLV_rgba(236, 111, 67, opacity);
+    case 1:
+        return MLV_rgba(162, 32, 81, opacity);
+    case 2:
+        return MLV_rgba(88, 53, 94, opacity);
+    case 3:
+        return MLV_rgba(105, 142, 147, opacity);
+    case 4:
+        return MLV_rgba(122, 231, 199, opacity);
+    case 5:
+        return MLV_rgba(168, 243, 191, opacity);
+    case 6:
+        return MLV_rgba(214, 255, 183, opacity);
+    default:
+        return MLV_rgba(255, 246, 183, opacity);
+    }
+}
+
 /**
  * @brief Dessine une enveloppe convexe
  * 
  * @param convex Adresse de l'enveloppe convexe
- * @param color Couleur des arrêtes du polygône
+ * @param color Couleur du polygône
  */
 void GFX_draw_polygon(ConvexHull* convex, MLV_Color color) {
+    int axis_x[convex->current_len];
+    int axis_y[convex->current_len];
+    if (convex->current_len <= 2)
+        return;
+
+    GFX_PolygonList_to_xy_array(convex, axis_x, axis_y);
+    MLV_draw_filled_polygon(axis_x, axis_y, convex->current_len, convex->color);
+}
+
+/**
+ * @brief Liste ConvexHull en double tableau.
+ * 
+ * @param convex Instance de ConvexHull
+ * @param x_axis Axe x de destination
+ * @param y_axis Axe y de destination
+ */
+void GFX_PolygonList_to_xy_array(ConvexHull* convex, int* x_axis, int* y_axis) {
     Vertex* vtx;
-    CIRCLEQ_FOREACH_REVERSE(vtx, &(convex->poly), entries) {
-        Vertex* vtx1 = CIRCLEQ_TRUE_NEXT(&convex->poly, vtx);
-        MLV_draw_line(
-            vtx->p->x, vtx->p->y,
-            vtx1->p->x, vtx1->p->y,
-            color
-        );
+    int i = 0;
+    CIRCLEQ_FOREACH(vtx, &(convex->poly), entries) {
+        x_axis[i] = vtx->p->x;
+        y_axis[i] = vtx->p->y;
+        ++i;
     }
 }
+
 
 /**
  * @brief Dessine une liste ConvexHulls.
@@ -45,12 +86,14 @@ void GFX_draw_polygon(ConvexHull* convex, MLV_Color color) {
  * @param convexs Adresse de la liste ConvexHulls
  */
 void GFX_draw_polygons(ListConvexHull* convexs) {
-    ConvexHullEntry* convex;
-    CIRCLEQ_FOREACH(convex, convexs, entries) {
+    ConvexHullEntry* convex_entry;
+
+    CIRCLEQ_FOREACH(convex_entry, convexs, entries) {
         GFX_draw_polygon(
-            convex->convex,
-            MLV_rgba(uniform(1, 200), uniform(1, 200), uniform(1, 200), 255)
+            convex_entry->convex,
+            convex_entry->convex->color
         );
+
     }
 }
 

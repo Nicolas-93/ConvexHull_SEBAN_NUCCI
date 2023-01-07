@@ -3,9 +3,7 @@
 #include "generation.h"
 #include "convexhull.h"
 #include "MLV/MLV_all.h"
-#ifdef DEBUG_CVH_CLEANING
 #include "graphics.h"
-#endif
 
 /**
  * @brief Calcule l'orientation du triangle
@@ -188,6 +186,7 @@ int CVH_convexhull_inception(ListPoint* points, ListConvexHull* convexs) {
     int i = 0;
     do {
         convex = CVH_init_convexhull();
+        convex->color = GFX_map_color(i);
         convex_entry = malloc(sizeof(ConvexHullEntry));
         convex_entry->convex = convex;
         CVH_points_to_convex(i == 0 ? points : &points2, convex, &reste, NULL);
@@ -242,6 +241,7 @@ ConvexHull* CVH_init_convexhull(void) {
         return NULL;
 
     CIRCLEQ_INIT(&convex->poly);
+    convex->color = MLV_COLOR_BLACK;
     
     return convex;
 }

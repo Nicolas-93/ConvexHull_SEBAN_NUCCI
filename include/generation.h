@@ -2,6 +2,7 @@
 #define GENERATION_H
 #include <sys/queue.h>
 #include <stdbool.h>
+#include <MLV/MLV_color.h>
 
 typedef struct {
     double x;
@@ -26,6 +27,7 @@ typedef CIRCLEQ_HEAD(ListPoint, Vertex) ListPoint;
  */
 typedef struct {
     Polygone poly;   /**< Le polygône (liste doublement chainée circulaire) */
+    MLV_Color color;
     int current_len; /**< Nombre de points du polygône*/
     int max_len;     /**< Nombre maximum de points que le polygône à géré*/
 } ConvexHull;
