@@ -65,6 +65,44 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
 }
 
 
+
+ConvexHullEntry* GEN_new_convexhullentry(Point* p) {
+    static int i = 0;
+    ConvexHullEntry* new_entry = malloc(sizeof(ConvexHullEntry));
+    ConvexHull* new_convex = CVH_init_convexhull();
+    Vertex* new_vtx = GEN_new_vertex_pointer(p);
+    CIRCLEQ_INSERT_TAIL(&new_convex->poly, new_vtx, entries);
+    new_entry->convex = new_convex;
+    new_convex->current_len = 1;
+    new_convex->color = GFX_map_color(i);
+    i++;
+    return new_entry;
+}
+
+void CVH_add_imbrique(ListConvexHull* convexs, ConvexHullEntry* convex, Point* point) {
+    
+    if (CIRCLEQ_EMPTY(convexs) || (void*) convexs == (void*) convex) {
+        ConvexHullEntry* new_entry = GEN_new_convexhullentry(point);
+        CIRCLEQ_INSERT_TAIL(convexs, new_entry, entries);
+        return;
+    }
+
+    ListPoint reste_interieur;
+    CIRCLEQ_INIT(&reste_interieur);
+    bool ajoute = CVH_add(point, convex->convex, &reste_interieur);
+
+    if (!ajoute) {
+        CVH_add_imbrique(convexs, CIRCLEQ_NEXT(convex, entries), point);
+    }
+
+    Vertex* vtx;
+    CIRCLEQ_FOREACH(vtx, &reste_interieur, entries) {
+        CVH_add_imbrique(convexs, CIRCLEQ_NEXT(convex, entries), vtx->p);
+    }
+
+    return;
+}
+
 /**
  * @brief Fonction auxillière de CVH_add().
  * Supprime les points ne faisant plus partis du polygône
