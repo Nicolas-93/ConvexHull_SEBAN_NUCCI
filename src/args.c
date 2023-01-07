@@ -9,11 +9,12 @@ void print_help(void) {
     printf(
         "Utilisation : demo\n"
         "options :\n"
-        "  -w, --window        taille de la fenêtre au format XXxXX\n"
-        "  -t, --thickness     épaisseur des points générés\n"
-        "  -n, --points        nombre de points à générer\n"
+        "  -w, --window        taille de la fenetre au format XXxXX\n"
+        "  -t, --thickness     epaisseur des points generes\n"
+        "  -n, --points        nombre de points a generer\n"
         "  -c, --concentration puissance de la concentration centree\n"
-        "  -r, --progressive   rayon dans lequel la génration aléatoire opere\n"
+        "  -r, --radius        rayon dans lequel la genration aleatoire opere, par defaut le rayon de la fenetre\n"
+        "  -p, --progressive   specifie si le tri est active"
     );
 }
 
