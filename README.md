@@ -44,4 +44,4 @@ Nous avons utilisé un thème pour doxygen, mais nous ne l'avons pas intégré �
 # Amélioration et bugs
 
 - La concentration de la génération carrée n'est pas paramétrable, ainsi si le paramètre concentration vaut 1, la génération sera uniforme sinon croissante indépendamente de la valeur.
-- Les polygônes convexes imbriqués n'utilise pas l'algorithme proposé, et utilise le fait que la fonction ajoutant un point à un polygône ne supprime pas les points mais les ajoute à une liste reste. Ainsi, pour les générer nous itérons sur le reste de chaque de polygône du plus grand au plus petit. Ceci à l'inconvénient d'être inefficace pour un affichage point par point, car nous recommençons à partir de la liste des points entrés à partir de zéro.
+
