@@ -3,9 +3,7 @@
 #include "generation.h"
 #include "convexhull.h"
 #include "MLV/MLV_all.h"
-#ifdef DEBUG_CVH_CLEANING
 #include "graphics.h"
-#endif
 
 /**
  * @brief Calcule l'orientation du triangle
@@ -64,6 +62,45 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
         return 1;
     }
     return 0;
+}
+
+
+
+ConvexHullEntry* GEN_new_convexhullentry(Point* p) {
+    static int i = 0;
+    ConvexHullEntry* new_entry = malloc(sizeof(ConvexHullEntry));
+    ConvexHull* new_convex = CVH_init_convexhull();
+    Vertex* new_vtx = GEN_new_vertex_pointer(p);
+    CIRCLEQ_INSERT_TAIL(&new_convex->poly, new_vtx, entries);
+    new_entry->convex = new_convex;
+    new_convex->current_len = 1;
+    new_convex->color = GFX_map_color(i);
+    i++;
+    return new_entry;
+}
+
+void CVH_add_imbrique(ListConvexHull* convexs, ConvexHullEntry* convex, Point* point) {
+    
+    if (CIRCLEQ_EMPTY(convexs) || (void*) convexs == (void*) convex) {
+        ConvexHullEntry* new_entry = GEN_new_convexhullentry(point);
+        CIRCLEQ_INSERT_TAIL(convexs, new_entry, entries);
+        return;
+    }
+
+    ListPoint reste_interieur;
+    CIRCLEQ_INIT(&reste_interieur);
+    bool ajoute = CVH_add(point, convex->convex, &reste_interieur);
+
+    if (!ajoute) {
+        CVH_add_imbrique(convexs, CIRCLEQ_NEXT(convex, entries), point);
+    }
+
+    Vertex* vtx;
+    CIRCLEQ_FOREACH(vtx, &reste_interieur, entries) {
+        CVH_add_imbrique(convexs, CIRCLEQ_NEXT(convex, entries), vtx->p);
+    }
+
+    return;
 }
 
 /**
@@ -163,6 +200,51 @@ void CVH_points_to_convex(
     }
 }
 
+void CVH_points_to_ListConvexHull(
+    ListPoint* points,
+    ListConvexHull* convexs,
+    void (*callback)(ListConvexHull*)
+) {
+    Vertex* vtx;
+
+    CIRCLEQ_FOREACH(vtx, points, entries) {
+        CVH_add_imbrique(convexs, convexs->cqh_first, vtx->p);
+        if (callback)
+            callback(convexs);
+    }
+}
+
+/**
+ * @brief Crée une liste de polygones convexes imbriqués.
+ * 
+ * @param points Adresse de la liste des points.
+ * @param convexs Adresse de la liste de polygones convexes
+ * de destination.
+ * @param return Taille de la liste
+ */
+int CVH_convexhull_inception(ListPoint* points, ListConvexHull* convexs) {
+    ListPoint reste, points2;
+    ConvexHullEntry* convex_entry;
+    ConvexHull* convex;
+    CIRCLEQ_INIT(convexs);
+    CIRCLEQ_INIT(&reste);
+    CIRCLEQ_INIT(&points2);
+
+    int i = 0;
+    do {
+        convex = CVH_init_convexhull();
+        convex->color = GFX_map_color(i);
+        convex_entry = malloc(sizeof(ConvexHullEntry));
+        convex_entry->convex = convex;
+        CVH_points_to_convex(i == 0 ? points : &points2, convex, &reste, NULL);
+        CIRCLEQ_INSERT_TAIL(convexs, convex_entry, entries);
+        CIRCLEQ_MOVE_TO(&reste, &points2, entries);
+        ++i;
+    } while (!CIRCLEQ_EMPTY(&reste));
+
+    return i;
+}
+
 /**
  * @brief Ajoute un point à une liste de points.
  * 
@@ -210,6 +292,7 @@ ConvexHull* CVH_init_convexhull(void) {
         return NULL;
 
     CIRCLEQ_INIT(&convex->poly);
+    convex->color = MLV_rgba(255, 0, 0, 50);
     
     return convex;
 }

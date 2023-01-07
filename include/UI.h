@@ -39,7 +39,7 @@ typedef struct {
     MLV_Color active_color_hovered;
     MLV_Color inactive_color;
     MLV_Color inactive_color_hovered;
-    bool* value;
+    int* value;
 } BooleanButton;
 
 typedef struct _Button {
@@ -78,11 +78,17 @@ MLV_Ev UI_wait_mouse_ev();
 #define IS_CLICK(ev) (ev.button == MLV_BUTTON_LEFT && ev.state == MLV_PRESSED)
 
 /**
+ * @brief Détermine si le bouton id_button_clicked correspond à id_button
+ * 
+ */
+#define IS_BUTTON(id_button_clicked, id_button) (id_button_clicked == id_button)
+
+/**
  * @brief Détermine si l'évènement souris ``ev`` est un clic
  * et si ``id_button_clicked`` correspond à ``id_button``
  * 
  */
-#define IS_CLICKED(ev, id_button_clicked, id_button) (IS_CLICK(ev) && (id_button_clicked == id_button))
+#define IS_CLICKED(ev, id_button_clicked, id_button) (IS_CLICK(ev) && (IS_BUTTON(id_button_clicked, id_button)))
 
 #define DEFAULT_BARE(...) ((BareButton) { \
         .back_color = MLV_COLOR_GREY, \

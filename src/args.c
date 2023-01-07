@@ -1,9 +1,9 @@
-#include "UI.h"
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "args.h"
 
+int ARG_min(int a, int b);
 
 void print_help(void) {
     printf(
@@ -20,16 +20,17 @@ void print_help(void) {
 
 Parameters parse_args(int argc, char *argv[]) {
     static Parameters params = {
-      .window.width = 500, .window.height = 500,
-      .gen = {
-        .shape = CERCLE,
-        .nb_points = 1000,
-        .rayon = 0,
-        .concentration = 3,
-        .progressif = 0,
-        .animation = false
-      },
-      .thickness = 3
+        .window.width = 500, .window.height = 500,
+        .gen = {
+            .shape = CERCLE,
+            .nb_points = 1000,
+            .rayon = 0,
+            .concentration = 3,
+            .progressif = 0,
+            .animation = false
+        },
+        .thickness = 3,
+        .inception = 0
     };
     static struct option long_options[] = {
         {"window",        required_argument, NULL, 'w'},
@@ -94,7 +95,11 @@ Parameters parse_args(int argc, char *argv[]) {
         }
     }
     if (params.gen.rayon == 0) {
-        params.gen.rayon = min(params.window.width, params.window.height) / 2 - 20;
+        params.gen.rayon = ARG_min(params.window.width, params.window.height) / 2 - 20;
     }
     return params;
+}
+
+int ARG_min(int a, int b) {
+    return a < b ? a : b;
 }

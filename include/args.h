@@ -1,10 +1,9 @@
 #ifndef H_ARGS
 #define H_ARGS
 #include <stdbool.h>
-#include "UI.h"
 
 enum Shape {CARRE, CERCLE};
-typedef struct Parameters {
+typedef struct {
     struct {
         enum Shape shape;
         int enabled;
@@ -12,9 +11,13 @@ typedef struct Parameters {
         int rayon;
         double concentration;
         int progressif;
-        bool animation;
+        int animation;
     } gen;
-    Size window;
+    struct {
+        int width;
+        int height;
+    } window;
+    int inception;
     int thickness;
 } Parameters;
 

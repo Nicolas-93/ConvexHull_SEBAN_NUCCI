@@ -210,6 +210,32 @@ void GEN_sort_tab_PointDistance_to_ListPoint(PointDistance* tab_points, int size
     free(tab_points);
 }
 
+void GEN_choose_generation(Parameters params, ListPoint* points) {
+    CIRCLEQ_INIT(points);
+
+    Point (*formule) (int, int, int, int, int, double);
+    if (params.gen.shape == CERCLE) {
+        formule = GEN_formule_cercle;
+    } /* La génération croissante, ne nous permet pas de
+    générer des points uniforme, comme la fonction cercle */
+    else if (params.gen.concentration != 1) {
+        formule = GEN_formule_carre_croissant;
+    } else {
+        formule = GEN_formule_carre_uniforme;
+    }
+    srand(time(NULL));
+    GEN_points_formule(points,
+        params.window.width, params.window.height,
+        params.gen.nb_points, params.gen.rayon,
+        params.gen.concentration, params.gen.progressif,
+        formule
+    );
+    /*printf(
+        "Animation : %d, Inception : %d, Tri : %d\n",
+        params.gen.animation, params.inception, params.gen.progressif
+    );*/
+}
+
 /**
  * @brief Alloue un Vertex et un point en mémoire.
  * 

@@ -9,7 +9,7 @@
             "args": [
                 "--window", "500x500",
                 "-n", "1000",
-                "--concentration", "2",
+                "--concentration", "1",
                 "--radius", "200"
             ],
             "stopAtEntry": false,

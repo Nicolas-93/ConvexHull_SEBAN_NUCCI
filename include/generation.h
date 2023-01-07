@@ -2,6 +2,9 @@
 #define GENERATION_H
 #include <sys/queue.h>
 #include <stdbool.h>
+#include <MLV/MLV_color.h>
+#include <time.h>
+#include "args.h"
 
 typedef struct {
     double x;
@@ -26,9 +29,16 @@ typedef CIRCLEQ_HEAD(ListPoint, Vertex) ListPoint;
  */
 typedef struct {
     Polygone poly;   /**< Le polygône (liste doublement chainée circulaire) */
+    MLV_Color color;
     int current_len; /**< Nombre de points du polygône */
     int max_len;     /**< Nombre maximum de points que le polygône à géré */
 } ConvexHull;
+
+typedef struct ConvexHullEntry{
+    ConvexHull* convex;
+    CIRCLEQ_ENTRY(ConvexHullEntry) entries;  
+} ConvexHullEntry;
+typedef CIRCLEQ_HEAD(ListConvexHull, ConvexHullEntry) ListConvexHull;
 
 void GEN_rectangle(ListPoint* points, int largeur, int hauteur, int nb_points);
 Point GEN_formule_carre_uniforme(
@@ -54,6 +64,9 @@ void GEN_carre(ListPoint* points, int largeur, int hauteur, int nb_points, int r
 double GEN_distance(double ax, double ay, double bx, double by);
 int GEN_compare_point_distance(const void* a, const void* b);
 void GEN_sort_tab_PointDistance_to_ListPoint(PointDistance* tab_points, int size, ListPoint* points);
+
+void GEN_choose_generation(Parameters params, ListPoint* points);
+
 Vertex* GEN_new_vertex(Point point);
 Vertex* GEN_new_vertex_pointer(Point* point);
 void GEN_free_vertex_list(ListPoint* lst, bool free_points);
@@ -76,5 +89,16 @@ int random_direction();
         (head)->cqh_first->field.cqe_prev = (void*) (head); \
         (head)->cqh_last->field.cqe_next = (void*) (head); \
     } while (0)
+
+/**
+ * @brief Déplace les cellules de head1 dans head2.
+ * 
+ */
+#define CIRCLEQ_MOVE_TO(head1, head2, field)\
+    do { \
+        *(head2) = *(head1); \
+        (head2)->cqh_first->field.cqe_prev = (void*) (head2); \
+        (head2)->cqh_last->field.cqe_next = (void*) (head2); \
+    } while (0) \
 
 #endif
