@@ -16,7 +16,7 @@ typedef struct {
 
 void GFX_plot_points(ListPoint* points, MLV_Color color);
 void GFX_draw_polygon(ConvexHull* convex, MLV_Color color);
-void GFX_draw_polygons(ConvexHulls* convexs);
+void GFX_draw_polygons(ListConvexHull* convexs);
 void GFX_animate_points_to_convex(ConvexHull* convex, ListPoint* reste);
 MouseEv GFX_wait_mouse_ev();
 void GFX_draw_triangle(Point a, Point b, Point c, MLV_Color color);

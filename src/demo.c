@@ -11,13 +11,13 @@ int main(void) {
     int largeur_fenetre = 500, hauteur_fenetre = 500;
     MLV_create_window("Convex Hull", "", largeur_fenetre, hauteur_fenetre);
 
-    ConvexHulls convexs;
+    ListConvexHull convexs;
     ListPoint points;
     MouseEv mouse;
     Point* point;
 
     srand(time(NULL));
-    GEN_carre(&points, largeur_fenetre, hauteur_fenetre, 150, 250);
+    GEN_carre(&points, largeur_fenetre, hauteur_fenetre, 100, 250);
 
     CVH_convexhull_inception(&points, &convexs);
 

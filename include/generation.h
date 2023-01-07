@@ -34,7 +34,7 @@ typedef struct ConvexHullEntry{
     ConvexHull* convex;
     CIRCLEQ_ENTRY(ConvexHullEntry) entries;  
 } ConvexHullEntry;
-typedef CIRCLEQ_HEAD(ConvexHulls, ConvexHullEntry) ConvexHulls;
+typedef CIRCLEQ_HEAD(ListConvexHull, ConvexHullEntry) ListConvexHull;
 
 void GEN_rectangle(ListPoint* points, int largeur, int hauteur, int nb_points);
 int GEN_cercle(

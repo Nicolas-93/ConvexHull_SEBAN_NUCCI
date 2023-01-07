@@ -44,7 +44,7 @@ void GFX_draw_polygon(ConvexHull* convex, MLV_Color color) {
  * 
  * @param convexs Adresse de la liste ConvexHulls
  */
-void GFX_draw_polygons(ConvexHulls* convexs) {
+void GFX_draw_polygons(ListConvexHull* convexs) {
     ConvexHullEntry* convex;
     CIRCLEQ_FOREACH(convex, convexs, entries) {
         GFX_draw_polygon(

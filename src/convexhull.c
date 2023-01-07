@@ -66,6 +66,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
     return 0;
 }
 
+
 /**
  * @brief Fonction auxillière de CVH_add().
  * Supprime les points ne faisant plus partis du polygône
@@ -163,34 +164,39 @@ void CVH_points_to_convex(
     }
 }
 
+
+void CVH_add_to_ListConvexHull(Point* point, ListConvexHull convexs) {
+
+}
+
 /**
  * @brief Crée une liste de polygones convexes imbriqués.
  * 
  * @param points Adresse de la liste des points.
  * @param convexs Adresse de la liste de polygones convexes
  * de destination.
+ * @param return Taille de la liste
  */
-void CVH_convexhull_inception(ListPoint* points, ConvexHulls* convexs) {
+int CVH_convexhull_inception(ListPoint* points, ListConvexHull* convexs) {
     ListPoint reste, points2;
     ConvexHullEntry* convex_entry;
     ConvexHull* convex;
     CIRCLEQ_INIT(convexs);
     CIRCLEQ_INIT(&reste);
     CIRCLEQ_INIT(&points2);
-    convex = CVH_init_convexhull();
-    convex_entry = malloc(sizeof(ConvexHullEntry));
-    convex_entry->convex = convex;
-    CVH_points_to_convex(points, convex, &reste, NULL);
-    CIRCLEQ_INSERT_TAIL(convexs, convex_entry, entries);
 
-    while (!CIRCLEQ_EMPTY(&reste)) {
+    int i = 0;
+    do {
+        convex = CVH_init_convexhull();
         convex_entry = malloc(sizeof(ConvexHullEntry));
         convex_entry->convex = convex;
-        convex = CVH_init_convexhull();
-        CIRCLEQ_MOVE_TO(&reste, &points2, entries);
-        CVH_points_to_convex(&points2, convex, &reste, NULL);
+        CVH_points_to_convex(i == 0 ? points : &points2, convex, &reste, NULL);
         CIRCLEQ_INSERT_TAIL(convexs, convex_entry, entries);
-    }
+        CIRCLEQ_MOVE_TO(&reste, &points2, entries);
+        ++i;
+    } while (!CIRCLEQ_EMPTY(&reste));
+
+    return i;
 }
 
 /**

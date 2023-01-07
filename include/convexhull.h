@@ -12,7 +12,7 @@ void CVH_user_add(ConvexHull* convex, ListPoint* reste);
 int CVH_cleaning(ConvexHull* convex, ListPoint* reste);
 Point* CVH_add_user_point(ListPoint* points, Point point);
 int CVH_add_to_convex(ConvexHull* convex, Point* point, ListPoint* reste);
-void CVH_convexhull_inception(ListPoint* points, ConvexHulls* convexs);
+int CVH_convexhull_inception(ListPoint* points, ListConvexHull* convexs);
 ConvexHull* CVH_init_convexhull(void);
 
 /**
