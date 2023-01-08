@@ -17,7 +17,6 @@ typedef struct {
         int height;
     } window;
     int inception;
-    int thickness;
 } Parameters;
 
 void print_help(void);
