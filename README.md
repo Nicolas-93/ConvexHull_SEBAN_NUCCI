@@ -7,14 +7,14 @@ make
 ```
 Le fichier exécutable se trouvera ensuite dans le dossier `build`.
 
-A noter, il est possible de passer en paramètre à `make`, `-DDEBUG_CVH_CLEANING=yes` afin d'animer pas à pas, l'algorithme de nettoyage de la partie 1.\
-Vous pouvez ignorer l'animation pendant l'ajout manuel des points en restant appuyé sur majuscule gauche. Pour avancer dans l'animation, vous pourrez appuyer sur espace.
-Nous l'avions créé afin de comprendre les étapes de l'algorithme, mais nous n'avions pas souhaité l'ajouter définitivement comme une option au programme :
+A noter, il est possible de passer en paramètre à `make`, `DEBUG_CVH_CLEANING=yes` afin d'animer pas à pas, l'algorithme de nettoyage.\
+Vous pouvez ignorer l'animation pendant l'ajout manuel des points en restant appuyé sur majuscule gauche. Pour avancer dans l'animation, vous pourrez appuyer sur espace.\
+Nous l'avions réalisé afin de comprendre les étapes de l'algorithme, mais nous n'avions pas souhaité l'ajouter définitivement comme une option au programme car l'actualisation de l'affichage est insérée directement dans le code de l'algorithme de nettoyage, et cela aurait sinon nécessité un paramètre supplémentaire, qui n'aurait pas sa place dans une fonction devant être purement algorithmique.\
+Vous pouvez donc l'activer de la manière suivante :
 ```sh
 make clean
-make -DDEBUG_CVH_CLEANING=yes
+make DEBUG_CVH_CLEANING=yes
 ```
-
 
 # Utilisation
 

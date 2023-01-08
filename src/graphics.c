@@ -45,18 +45,37 @@ MLV_Color GFX_map_color(int n) {
 }
 
 /**
- * @brief Dessine une enveloppe convexe
+ * @brief Dessine une enveloppe convexe pleine
  * 
  * @param convex Adresse de l'enveloppe convexe
- * @param color Couleur du polygône
  */
-void GFX_draw_polygon(ConvexHull* convex, MLV_Color color) {
+void GFX_draw_filled_polygon(ConvexHull* convex) {
     int axis_x[convex->current_len];
     int axis_y[convex->current_len];
 
     GFX_PolygonList_to_xy_array(convex, axis_x, axis_y);
-    MLV_draw_filled_polygon(axis_x, axis_y, convex->current_len, convex->color);
+    MLV_draw_filled_polygon(
+        axis_x, axis_y, convex->current_len,
+        convex->color
+    );
     GFX_plot_points((ListPoint*) &convex->poly, convex->color);
+}
+
+/**
+ * @brief Dessine un polygone
+ * 
+ * @param convex Adresse de l'enveloppe convexe
+ */
+void GFX_draw_lines_polygon(ConvexHull* convex) {
+    Vertex* vtx;
+    CIRCLEQ_FOREACH_REVERSE(vtx, &(convex->poly), entries) {
+        Vertex* vtx1 = CIRCLEQ_LOOP_NEXT(&convex->poly, vtx, entries);
+        MLV_draw_line(
+            vtx->p->x, vtx->p->y,
+            vtx1->p->x, vtx1->p->y,
+            convex->color
+        );
+    }
 }
 
 /**
@@ -78,17 +97,16 @@ void GFX_PolygonList_to_xy_array(ConvexHull* convex, int* x_axis, int* y_axis) {
 
 
 /**
- * @brief Dessine une liste ConvexHulls.
+ * @brief Dessine une liste de polygônes convexes, pleins.
  * 
  * @param convexs Adresse de la liste ConvexHulls
  */
-void GFX_draw_polygons(ListConvexHull* convexs) {
+void GFX_draw_filled_polygons(ListConvexHull* convexs) {
     ConvexHullEntry* convex_entry;
 
     CIRCLEQ_FOREACH(convex_entry, convexs, entries) {
-        GFX_draw_polygon(
-            convex_entry->convex,
-            convex_entry->convex->color
+        GFX_draw_filled_polygon(
+            convex_entry->convex
         );
     }
 }
@@ -98,7 +116,7 @@ void GFX_animate_convex(ConvexHull* convex, ListPoint* reste) {
     
     GFX_plot_points(reste, MLV_COLOR_BLUE);
     GFX_plot_points((ListPoint*) &(convex->poly), MLV_COLOR_RED);
-    GFX_draw_polygon(convex, MLV_COLOR_ORANGE);
+    GFX_draw_filled_polygon(convex);
 
     MLV_wait_milliseconds(1);
     MLV_actualise_window();
@@ -107,7 +125,7 @@ void GFX_animate_convex(ConvexHull* convex, ListPoint* reste) {
 void GFX_animate_ListConvexHull(ListConvexHull* convexs) {
     MLV_clear_window(MLV_COLOR_WHITE);
 
-    GFX_draw_polygons(convexs);
+    GFX_draw_filled_polygons(convexs);
 
     MLV_wait_milliseconds(1);
     MLV_actualise_window();
@@ -134,8 +152,8 @@ void GFX_draw_debug_triangle_direction(ConvexHull* convex, Point a, Point b, Poi
         return;
     MLV_Color color = direct? MLV_COLOR_GREEN : MLV_COLOR_RED;
     MLV_clear_window(MLV_COLOR_WHITE);
-    GFX_draw_polygon(convex, MLV_COLOR_ORANGE);
-    GFX_plot_points((ListPoint*) &convex->poly, MLV_COLOR_RED);
+    GFX_draw_lines_polygon(convex);
+    GFX_plot_points((ListPoint*) &convex->poly, convex->color);
     GFX_draw_triangle(a, b, c, color);
     MLV_actualise_window();
     MLV_wait_keyboard(NULL, NULL, NULL);

@@ -122,8 +122,6 @@ void SCN_menu(Parameters* params) {
 
         switch (id_button) {
         case INCEPTION_MODE:
-            next_scene = params->inception ? SCN_polygon_inception
-                                           : SCN_polygon_simple;
             break;
         case A_CERCLE:
             params->gen.shape = CERCLE;
@@ -139,6 +137,8 @@ void SCN_menu(Parameters* params) {
         case A_CARRE:
             params->gen.enabled = true;
         case SOURIS:
+            next_scene = params->inception ? SCN_polygon_inception
+                                           : SCN_polygon_simple;
             next_scene(*params);
         }
     }
