@@ -1,6 +1,7 @@
 #include <math.h>
 #include <MLV/MLV_all.h>
 #include "graphics.h"
+#include "convexhull.h"
 
 
 /**
@@ -157,21 +158,4 @@ void GFX_draw_debug_triangle_direction(ConvexHull* convex, Point a, Point b, Poi
     GFX_draw_triangle(a, b, c, color);
     MLV_actualise_window();
     MLV_wait_keyboard(NULL, NULL, NULL);
-}
-
-/**
- * @brief Attend un évènement et le renvoie
- * 
- * @return MLV_Ev 
- */
-MLV_Ev GFX_wait_ev() {
-    MLV_Ev ev = {0};
-
-    ev.type = MLV_wait_event(
-        &ev.key_btn, NULL, NULL,
-        NULL, NULL,
-        &ev.x, &ev.y,
-        &ev.button, &ev.state
-    );
-    return ev;
 }

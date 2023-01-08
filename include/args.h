@@ -1,6 +1,5 @@
 #ifndef H_ARGS
 #define H_ARGS
-#include <stdbool.h>
 
 enum Shape {CARRE, CERCLE};
 typedef struct {

@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/demo",
             "args": [
-                "--window", "500x500",
+                "--window", "600x500",
                 "-n", "1000",
                 "--concentration", "1",
                 "--radius", "200"

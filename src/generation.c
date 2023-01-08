@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include <time.h>
 #include "generation.h"
+#include "convexhull.h"
 
 #define PI 3.14159265358979323846
 
@@ -183,7 +185,7 @@ int GEN_points_formule(
             tab_points[i] = p_dist;
         }
         else {
-            Vertex* new_entry = GEN_new_vertex(p);
+            Vertex* new_entry = CVH_new_vertex(p);
             if (!new_entry)
                 return 0;
             CIRCLEQ_INSERT_TAIL(points, new_entry, entries);
@@ -205,7 +207,7 @@ int GEN_points_formule(
 void GEN_sort_tab_PointDistance_to_ListPoint(PointDistance* tab_points, int size, ListPoint* points) {
     qsort(tab_points, size, sizeof(PointDistance), GEN_compare_point_distance);
     for (int i = 0; i < size; ++i) {
-        Vertex* new_entry = GEN_new_vertex(tab_points[i].p);
+        Vertex* new_entry = CVH_new_vertex(tab_points[i].p);
         CIRCLEQ_INSERT_TAIL(points, new_entry, entries);
     }
     free(tab_points);
@@ -243,60 +245,4 @@ void GEN_choose_generation(Parameters params, ListPoint* points) {
         "Animation : %d, Inception : %d, Tri : %d\n",
         params.gen.animation, params.inception, params.gen.progressif
     );*/
-}
-
-/**
- * @brief Alloue un Vertex et un point en mémoire.
- * 
- * @param point Point à allouer.
- * @return Adresse du Vertex créé, NULL en cas d'erreur.
- */
-Vertex* GEN_new_vertex(Point point) {
-    Point* new_point = malloc(sizeof(Point));
-    Vertex* new_vtx = malloc(sizeof(Vertex));
-    
-    if (!new_point || !new_vtx)
-        return NULL;
-
-    *new_point = point;
-    new_vtx->p = new_point;
-    
-    return new_vtx;
-}
-
-/**
- * @brief Alloue un Vertex en mémoire.
- * 
- * @param point Adresse du point à affecter au vertex.
- * @return Adresse du Vertex créé, NULL en cas d'erreur.
- */
-Vertex* GEN_new_vertex_pointer(Point* point) {
-    Vertex* new_vtx = malloc(sizeof(Vertex));
-    
-    if (!new_vtx)
-        return NULL;
-
-    new_vtx->p = point;
-
-    return new_vtx;
-}
-
-/**
- * @brief Libére la mémoire allouée pour une liste de points.
- * 
- * @param lst Adresse de la liste
- * @param free_points Spécifie si on libère également
- * les points alloués.
- */
-void GEN_free_vertex_list(ListPoint* lst, bool free_points) {
-    Vertex *vtx = CIRCLEQ_FIRST(lst), *vtx2;
-
-    while (vtx != (void*) lst) {
-        vtx2 = CIRCLEQ_NEXT(vtx, entries);
-        if (free_points)
-            free(vtx->p);
-        free(vtx);
-        vtx = vtx2;
-    }
-    CIRCLEQ_INIT(lst);
 }

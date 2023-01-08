@@ -3,8 +3,19 @@
 #include <MLV/MLV_all.h>
 #include <stdbool.h>
 #include "Grille.h"
-#include "graphics.h"
 
+/**
+ * @struct MLV_Ev
+ * @brief Evènement souris
+ */
+typedef struct {
+    int x; /**< Position x du clic */
+    int y; /**< Position y du clic */
+    MLV_Event type;
+    MLV_Mouse_button button; /**< Type du clic : Gauche, Milleu, Droit */
+    MLV_Button_state state; /**< Etat du clic */
+    MLV_Keyboard_button key_btn; /**< Touche pressée */
+} MLV_Ev;
 
 enum ButtonType {NONE = 0, BAREBONE = 1, TEXT = 2, BOOLEAN = 4};
 
@@ -69,7 +80,7 @@ bool UI_test_button(MLV_Ev mouse, Button* b);
 void UI_draw_button(Button* button, bool survole);
 int UI_draw_buttons(Buttons* buttons, MLV_Ev ev);
 int UI_test_buttons(Buttons* buttons, MLV_Ev ev);
-MLV_Ev UI_wait_mouse_ev();
+MLV_Ev UI_wait_ev();
 
 /**
  * @brief Détermine si l'évènement souris est un clic

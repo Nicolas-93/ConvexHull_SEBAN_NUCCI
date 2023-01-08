@@ -211,3 +211,21 @@ int UI_test_buttons(Buttons* buttons, MLV_Ev ev) {
     }
     return NONE;
 }
+
+
+/**
+ * @brief Attend un évènement et le renvoie
+ * 
+ * @return MLV_Ev 
+ */
+MLV_Ev UI_wait_ev() {
+    MLV_Ev ev = {0};
+
+    ev.type = MLV_wait_event(
+        &ev.key_btn, NULL, NULL,
+        NULL, NULL,
+        &ev.x, &ev.y,
+        &ev.button, &ev.state
+    );
+    return ev;
+}

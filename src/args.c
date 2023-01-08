@@ -1,6 +1,7 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "args.h"
 
 int ARG_min(int a, int b);
@@ -53,7 +54,7 @@ Parameters parse_args(int argc, char *argv[]) {
             if (sscanf(optarg, "%dx%d", &params.window.width, &params.window.height) != 2 ||
                 params.window.width < 100 || params.window.height < 100
             ) {
-                fprintf(stderr, "Veuillez entrer une taille de fenetre supérieure à 100x100\n");
+                fprintf(stderr, "Veuillez entrer une taille de fenetre superieure à 100x100\n");
                 exit(EXIT_FAILURE);
             }
             break;
@@ -65,7 +66,7 @@ Parameters parse_args(int argc, char *argv[]) {
             break;
         case 'n':
             if ((params.gen.nb_points = atoi(optarg)) <= 0) {
-                fprintf(stderr, "Veuilez demander au moins 1 point à générer.\n");
+                fprintf(stderr, "Veuilez demander au moins 1 point à generer.\n");
                 exit(EXIT_FAILURE);
             }
             break;
@@ -78,15 +79,16 @@ Parameters parse_args(int argc, char *argv[]) {
             break;
         case 't':
             if ((params.thickness = atoi(optarg)) < 1) {
-                fprintf(stderr, "Veuillez entrer une epaisseur entière, supérieur ou égal à 1.\n");
+                fprintf(stderr, "Veuillez entrer une epaisseur entiere, supérieur ou egal à 1.\n");
                 exit(EXIT_FAILURE);
             }
             break;
         case 'p':
-            params.gen.progressif = 1;
+            params.gen.progressif = true;
             break;
         case 'a':
             params.gen.animation = true;
+            break;
         case 'h':
         case '?':
         default:

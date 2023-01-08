@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "generation.h"
+#include <MLV/MLV_all.h>
 #include "convexhull.h"
-#include "MLV/MLV_all.h"
+#include "generation.h"
 #include "graphics.h"
 
 /**
@@ -37,7 +37,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
     Vertex *vtx, *vtx1;
 
     if (convex->current_len < 2) {
-        new_entry = GEN_new_vertex_pointer(point);
+        new_entry = CVH_new_vertex_pointer(point);
         CIRCLEQ_INSERT_TAIL(poly, new_entry, entries);
         convex->current_len++;
         convex->max_len++;
@@ -50,7 +50,7 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
         if (IS_DIRECT_TRIANGLE(*point, *vtx->p, *vtx1->p))
             continue;
 
-        new_entry = GEN_new_vertex_pointer(point);
+        new_entry = CVH_new_vertex_pointer(point);
 
         CIRCLEQ_INSERT_AFTER(poly, vtx, new_entry, entries);
         CIRCLEQ_SET_AS_FIRST(poly, new_entry, entries);
@@ -65,42 +65,6 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
 }
 
 /**
- * @brief Alloue une entrée de liste de ConvexHull,
- * et lui alloue également un ConvexHull avec l'adresse
- * du point.
- * La couleur du polygône change successivement
- * à chaque appel, selon le mapping de la fonction
- * GFX_map_color().
- * 
- * @param p Adresse du point à ajouter à l'enveloppe
- * @return ConvexHullEntry* Adresse de l'entrée de liste de ConvexHull, ou
- * NULL en cas d'échec lors d'une allocation.
- */
-ConvexHullEntry* GEN_new_convexhullentry(Point* p) {
-    ConvexHullEntry* new_entry;
-    ConvexHull* new_convex;
-    Vertex* new_vtx;
-    static int i = 0;
-
-    new_entry = malloc(sizeof(ConvexHullEntry));
-    new_convex = CVH_init_convexhull();
-    new_vtx = GEN_new_vertex_pointer(p);
-    
-    if (!new_entry || !new_convex || !new_vtx) {
-        return NULL;
-    }
-
-    CIRCLEQ_INSERT_TAIL(&new_convex->poly, new_vtx, entries);
-    new_convex->current_len = 1;
-    new_convex->color = GFX_map_color(i);
-    new_entry->convex = new_convex;
-    
-    i++;
-    
-    return new_entry;
-}
-
-/**
  * @brief Ajoute un point à une des enveloppes convexe de la liste.
  * 
  * @param convexs Adresse de l'entête de la liste d'enveloppes convexes.
@@ -111,7 +75,7 @@ ConvexHullEntry* GEN_new_convexhullentry(Point* p) {
 void CVH_add_inception_recursif(ListConvexHull* convexs, ConvexHullEntry* convex, Point* point) {
     
     if (CIRCLEQ_EMPTY(convexs) || (void*) convexs == (void*) convex) {
-        ConvexHullEntry* new_entry = GEN_new_convexhullentry(point);
+        ConvexHullEntry* new_entry = CVH_new_convexhullentry(point);
         CIRCLEQ_INSERT_TAIL(convexs, new_entry, entries);
         return;
     }
@@ -222,7 +186,7 @@ void CVH_points_to_ConvexHull(
     CIRCLEQ_FOREACH(vtx, points, entries) {
         short added = CVH_add(vtx->p, convex, reste);
         if (!added) {
-            new_entry = GEN_new_vertex_pointer(vtx->p);
+            new_entry = CVH_new_vertex_pointer(vtx->p);
             CIRCLEQ_INSERT_HEAD(reste, new_entry, entries);
         }
         if (callback)
@@ -262,12 +226,12 @@ void CVH_points_to_ListConvexHull(
  * En effet, nous itérons succesivement sur les points
  * intérieurs.
  * 
- * @param points Adresse de la liste des points.
  * @param convexs Adresse de l'entête de la liste de
  * polygones convexes de destination.
+ * @param points Adresse de la liste des points.
  * @return int Taille de la liste
  */
-int CVH_add_inception_iteratif(ListPoint* points, ListConvexHull* convexs) {
+int CVH_add_inception_iteratif(ListConvexHull* convexs, ListPoint* points) {
     ListPoint reste, points2;
     ConvexHullEntry* convex_entry;
     ConvexHull* convex;
@@ -299,7 +263,7 @@ int CVH_add_inception_iteratif(ListPoint* points, ListConvexHull* convexs) {
  */
 Point* CVH_add_user_point(ListPoint* points, Point point) {
     Vertex* new_entry;
-    new_entry = GEN_new_vertex((Point) {point.x, point.y});
+    new_entry = CVH_new_vertex((Point) {point.x, point.y});
     CIRCLEQ_INSERT_TAIL(points, new_entry, entries);
 
     return new_entry->p;
@@ -320,11 +284,47 @@ int CVH_add_to_convex(ConvexHull* convex, Point* point, ListPoint* reste) {
     }
     int added = CVH_add(point, convex, reste);
     if (!added) {
-        Vertex* new_entry = GEN_new_vertex_pointer(point);
+        Vertex* new_entry = CVH_new_vertex_pointer(point);
         CIRCLEQ_INSERT_TAIL(reste, new_entry, entries);
     }
     // printf("Vertex(%d, %d)\n", new_entry->p->x, new_entry->p->y);
     return added;
+}
+
+/**
+ * @brief Alloue un Vertex et un point en mémoire.
+ * 
+ * @param point Point à allouer.
+ * @return Adresse du Vertex créé, NULL en cas d'erreur.
+ */
+Vertex* CVH_new_vertex(Point point) {
+    Point* new_point = malloc(sizeof(Point));
+    Vertex* new_vtx = malloc(sizeof(Vertex));
+    
+    if (!new_point || !new_vtx)
+        return NULL;
+
+    *new_point = point;
+    new_vtx->p = new_point;
+    
+    return new_vtx;
+}
+
+/**
+ * @brief Alloue un Vertex en mémoire.
+ * 
+ * @param point Adresse du point à affecter au vertex.
+ * @return Adresse du Vertex créé, NULL en cas d'erreur.
+ */
+Vertex* CVH_new_vertex_pointer(Point* point) {
+    Vertex* new_vtx = malloc(sizeof(Vertex));
+    
+    if (!new_vtx)
+        return NULL;
+
+    new_vtx->p = point;
+
+    return new_vtx;
 }
 
 /**
@@ -344,12 +344,68 @@ ConvexHull* CVH_init_convexhull(void) {
 }
 
 /**
+ * @brief Alloue une entrée de liste de ConvexHull,
+ * et lui alloue également un ConvexHull avec l'adresse
+ * du point.
+ * La couleur du polygône change successivement
+ * à chaque appel, selon le mapping de la fonction
+ * GFX_map_color().
+ * 
+ * @param p Adresse du point à ajouter à l'enveloppe
+ * @return ConvexHullEntry* Adresse de l'entrée de liste de ConvexHull, ou
+ * NULL en cas d'échec lors d'une allocation.
+ */
+ConvexHullEntry* CVH_new_convexhullentry(Point* p) {
+    ConvexHullEntry* new_entry;
+    ConvexHull* new_convex;
+    Vertex* new_vtx;
+    static int i = 0;
+
+    new_entry = malloc(sizeof(ConvexHullEntry));
+    new_convex = CVH_init_convexhull();
+    new_vtx = CVH_new_vertex_pointer(p);
+    
+    if (!new_entry || !new_convex || !new_vtx) {
+        return NULL;
+    }
+
+    CIRCLEQ_INSERT_TAIL(&new_convex->poly, new_vtx, entries);
+    new_convex->current_len = 1;
+    new_convex->color = GFX_map_color(i);
+    new_entry->convex = new_convex;
+    
+    i++;
+    
+    return new_entry;
+}
+
+/**
+ * @brief Libére la mémoire allouée pour une liste de points.
+ * 
+ * @param lst Adresse de la liste
+ * @param free_points Spécifie si on libère également
+ * les points alloués.
+ */
+void CVH_free_vertex_list(ListPoint* lst, bool free_points) {
+    Vertex *vtx = CIRCLEQ_FIRST(lst), *vtx2;
+
+    while (vtx != (void*) lst) {
+        vtx2 = CIRCLEQ_NEXT(vtx, entries);
+        if (free_points)
+            free(vtx->p);
+        free(vtx);
+        vtx = vtx2;
+    }
+    CIRCLEQ_INIT(lst);
+}
+
+/**
  * @brief Libère la mémoire allouée pour un
  * objet ConvexHull, sans libérer les points.
  * 
  * @param convex Adresse de l'instance ConvexHull
  */
 void CVH_free_convexhull(ConvexHull* convex) {
-    GEN_free_vertex_list((ListPoint*) &convex->poly, 0);
+    CVH_free_vertex_list((ListPoint*) &convex->poly, 0);
     free(convex);
 }

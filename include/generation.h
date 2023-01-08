@@ -3,42 +3,14 @@
 #include <sys/queue.h>
 #include <stdbool.h>
 #include <MLV/MLV_color.h>
-#include <time.h>
 #include "args.h"
+#include "convexhull.h"
 
-typedef struct {
-    double x;
-    double y;
-} Point;
 
 typedef struct {
     Point p;
     double dist;
 } PointDistance;
-
-typedef struct Vertex {
-    Point* p;
-    CIRCLEQ_ENTRY(Vertex) entries;
-} Vertex;
-typedef CIRCLEQ_HEAD(Polygone, Vertex) Polygone;
-typedef CIRCLEQ_HEAD(ListPoint, Vertex) ListPoint;
-
-/**
- * @struct ConvexHull
- * @brief Objet Enveloppe convexe
- */
-typedef struct {
-    Polygone poly;   /**< Le polygône (liste doublement chainée circulaire) */
-    MLV_Color color;
-    int current_len; /**< Nombre de points du polygône */
-    int max_len;     /**< Nombre maximum de points que le polygône à géré */
-} ConvexHull;
-
-typedef struct ConvexHullEntry{
-    ConvexHull* convex;
-    CIRCLEQ_ENTRY(ConvexHullEntry) entries;  
-} ConvexHullEntry;
-typedef CIRCLEQ_HEAD(ListConvexHull, ConvexHullEntry) ListConvexHull;
 
 double rand_double(double n);
 double uniform(double a, double b);
@@ -68,11 +40,6 @@ int GEN_points_formule(
 double GEN_distance(double ax, double ay, double bx, double by);
 int GEN_compare_point_distance(const void* a, const void* b);
 void GEN_sort_tab_PointDistance_to_ListPoint(PointDistance* tab_points, int size, ListPoint* points);
-
-Vertex* GEN_new_vertex(Point point);
-Vertex* GEN_new_vertex_pointer(Point* point);
-void GEN_free_vertex_list(ListPoint* lst, bool free_points);
-
 
 /**
  * @brief Définit un élément comme tête de la liste 

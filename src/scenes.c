@@ -4,6 +4,10 @@
 #include <time.h>
 #include <MLV/MLV_all.h>
 #include "scenes.h"
+#include "UI.h"
+#include "graphics.h"
+#include "convexhull.h"
+#include "generation.h"
 
 
 Buttons SCN_home_buttons(Parameters* params) {
@@ -116,7 +120,7 @@ void SCN_menu(Parameters* params) {
         // Grille_draw_v1(buttons.grille);
         UI_draw_buttons(&buttons, mouse);
         MLV_actualise_window();
-        mouse = GFX_wait_ev();
+        mouse = UI_wait_ev();
 
         id_button = UI_test_buttons(&buttons, mouse);
 
@@ -162,12 +166,12 @@ void SCN_polygon_simple(Parameters params) {
     while (1) {
         GFX_animate_convex(convex, &reste);
         // break;
-        ev = GFX_wait_ev();
+        ev = UI_wait_ev();
         if (ev.type == MLV_KEY) {
             if (ev.key_btn == MLV_KEYBOARD_ESCAPE) {
                 CVH_free_convexhull(convex);
-                GEN_free_vertex_list(&reste, false);
-                GEN_free_vertex_list(&points, true);
+                CVH_free_vertex_list(&reste, false);
+                CVH_free_vertex_list(&points, true);
                 break;
             }
         }
@@ -196,10 +200,10 @@ void SCN_polygon_inception(Parameters params) {
 
     while (1) {
         GFX_animate_ListConvexHull(&convexs);
-        ev = GFX_wait_ev();
+        ev = UI_wait_ev();
         if (ev.type == MLV_KEY) {
             if (ev.key_btn == MLV_KEYBOARD_ESCAPE) {
-                GEN_free_vertex_list(&points, true);
+                CVH_free_vertex_list(&points, true);
                 // free convexs ici
                 break;
             }
