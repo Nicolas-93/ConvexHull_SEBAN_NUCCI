@@ -9,5 +9,6 @@ Buttons SCN_home_buttons(Parameters* params);
 void SCN_menu(Parameters* params);
 void SCN_polygon_simple(Parameters params);
 void SCN_polygon_inception(Parameters params);
+MLV_Ev SCN_wait_ev();
 
 #endif

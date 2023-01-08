@@ -130,7 +130,6 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
             deleted_points++;
         }
         else {
-            //CIRCLEQ_SET_AS_FIRST(poly, vtx, entries);
             break;
         }
     }

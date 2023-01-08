@@ -117,7 +117,6 @@ void SCN_menu(Parameters* params) {
     void (*next_scene) (Parameters) = SCN_polygon_simple;
 	while (1) {
         MLV_clear_window(MLV_COLOR_WHITE);
-        // Grille_draw_v1(buttons.grille);
         UI_draw_buttons(&buttons, mouse);
         MLV_actualise_window();
         mouse = UI_wait_ev();
@@ -165,8 +164,7 @@ void SCN_polygon_simple(Parameters params) {
     }
     while (1) {
         GFX_animate_convex(convex, &reste);
-        // break;
-        ev = UI_wait_ev();
+        ev = SCN_wait_ev();
         if (ev.type == MLV_KEY) {
             if (ev.key_btn == MLV_KEYBOARD_ESCAPE) {
                 CVH_free_convexhull(convex);
@@ -200,7 +198,7 @@ void SCN_polygon_inception(Parameters params) {
 
     while (1) {
         GFX_animate_ListConvexHull(&convexs);
-        ev = UI_wait_ev();
+        ev = SCN_wait_ev();
         if (ev.type == MLV_KEY) {
             if (ev.key_btn == MLV_KEYBOARD_ESCAPE) {
                 CVH_free_vertex_list(&points, true);
@@ -213,4 +211,16 @@ void SCN_polygon_inception(Parameters params) {
             CVH_add_inception_recursif(&convexs, convexs.cqh_first, point);
         }
     }
+}
+
+MLV_Ev SCN_wait_ev() {
+    MLV_Ev ev;
+    ev.type = MLV_wait_keyboard_or_mouse(
+        &ev.key_btn, NULL, NULL,
+        &ev.x, &ev.y
+    );
+    ev.state = MLV_PRESSED;
+    ev.button = MLV_BUTTON_LEFT;
+
+    return ev;
 }
