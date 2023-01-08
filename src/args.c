@@ -40,13 +40,13 @@ Parameters parse_args(int argc, char *argv[]) {
         {"concentration", required_argument, NULL, 'c'},
         {"progressive",   no_argument,       NULL, 'p'},
         {"animation",     no_argument,       NULL, 'a'},
-        {"help",          required_argument, NULL, 'h'},
+        {"help",          no_argument,       NULL, 'h'},
         {0, 0, 0, 0}
     };
     int option_index = 0;
     char* end_ind;
     char c;
-    while ((c = getopt_long(argc, argv, "w:r:n:c:t:hp", long_options,
+    while ((c = getopt_long(argc, argv, "w:r:n:c:hpa", long_options,
                        &option_index)) != -1) {
         switch (c) {
         case 'w':
