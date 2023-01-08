@@ -154,7 +154,7 @@ void SCN_polygon_simple(Parameters params) {
 
     if (params.gen.enabled) {
         GEN_choose_generation(params, &points);
-        CVH_points_to_convex(
+        CVH_points_to_ConvexHull(
             &points, convex, &reste,
             params.gen.animation? GFX_animate_convex : NULL
         );
@@ -206,7 +206,7 @@ void SCN_polygon_inception(Parameters params) {
         }
         else if (IS_CLICK(ev)) {
             point = CVH_add_user_point(&points, MOUSE_EV_TO_POINT(ev));
-            CVH_add_imbrique(&convexs, convexs.cqh_first, point);
+            CVH_add_inception_recursif(&convexs, convexs.cqh_first, point);
         }
     }
 }

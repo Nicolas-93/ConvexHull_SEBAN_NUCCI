@@ -63,10 +63,10 @@ double inline GEN_distance(double ax, double ay, double bx, double by) {
 int inline GEN_compare_point_distance(const void* a, const void* b) {
     return ((PointDistance*) a)->dist - ((PointDistance*) b)->dist;
 }
+
 /**
  * @brief Génère un point dans un cercle.
  * 
- * @param points Adresse de la liste de points où les points seront stockés.
  * @param largeur Largeur de la fenêtre.
  * @param hauteur Hauteur de la fenêtre.
  * @param i Itérateur de la boucle sur nb_points.
@@ -81,6 +81,7 @@ int inline GEN_compare_point_distance(const void* a, const void* b) {
  * en tendant vers ce dernier
  * - Si = 1 : Les points seront distribués uniformément
  * - Si > 1 : Les points tendront vers le centre du cercle
+ * @return Point Point généré
  */
 Point GEN_formule_cercle(
     int largeur, int hauteur,
@@ -210,14 +211,22 @@ void GEN_sort_tab_PointDistance_to_ListPoint(PointDistance* tab_points, int size
     free(tab_points);
 }
 
+/**
+ * @brief Renvoie une liste de points générée selon
+ * les paramètres demandés par l'utilisateur.
+ * 
+ * @param params Paramètres
+ * @param points Liste de points de destination
+ */
 void GEN_choose_generation(Parameters params, ListPoint* points) {
     CIRCLEQ_INIT(points);
 
     Point (*formule) (int, int, int, int, int, double);
     if (params.gen.shape == CERCLE) {
         formule = GEN_formule_cercle;
-    } /* La génération croissante, ne nous permet pas de
-    générer des points uniforme, comme la fonction cercle */
+    }
+    /* La génération croissante, ne nous permet pas de
+    générer des points uniformément, comme la fonction cercle */
     else if (params.gen.concentration != 1) {
         formule = GEN_formule_carre_croissant;
     } else {

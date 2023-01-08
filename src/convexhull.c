@@ -64,22 +64,51 @@ int CVH_add(Point* point, ConvexHull* convex, ListPoint* reste) {
     return 0;
 }
 
-
-
+/**
+ * @brief Alloue une entrée de liste de ConvexHull,
+ * et lui alloue également un ConvexHull avec l'adresse
+ * du point.
+ * La couleur du polygône change successivement
+ * à chaque appel, selon le mapping de la fonction
+ * GFX_map_color().
+ * 
+ * @param p Adresse du point à ajouter à l'enveloppe
+ * @return ConvexHullEntry* Adresse de l'entrée de liste de ConvexHull, ou
+ * NULL en cas d'échec lors d'une allocation.
+ */
 ConvexHullEntry* GEN_new_convexhullentry(Point* p) {
+    ConvexHullEntry* new_entry;
+    ConvexHull* new_convex;
+    Vertex* new_vtx;
     static int i = 0;
-    ConvexHullEntry* new_entry = malloc(sizeof(ConvexHullEntry));
-    ConvexHull* new_convex = CVH_init_convexhull();
-    Vertex* new_vtx = GEN_new_vertex_pointer(p);
+
+    new_entry = malloc(sizeof(ConvexHullEntry));
+    new_convex = CVH_init_convexhull();
+    new_vtx = GEN_new_vertex_pointer(p);
+    
+    if (!new_entry || !new_convex || !new_vtx) {
+        return NULL;
+    }
+
     CIRCLEQ_INSERT_TAIL(&new_convex->poly, new_vtx, entries);
-    new_entry->convex = new_convex;
     new_convex->current_len = 1;
     new_convex->color = GFX_map_color(i);
+    new_entry->convex = new_convex;
+    
     i++;
+    
     return new_entry;
 }
 
-void CVH_add_imbrique(ListConvexHull* convexs, ConvexHullEntry* convex, Point* point) {
+/**
+ * @brief Ajoute un point à une des enveloppes convexe de la liste.
+ * 
+ * @param convexs Adresse de l'entête de la liste d'enveloppes convexes.
+ * @param convex Elément de la liste à partir duquel on commence l'algorithme
+ * Par défaut veuillez choisir le premier élement de la liste.
+ * @param point Adresse d'un point à ajouter.
+ */
+void CVH_add_inception_recursif(ListConvexHull* convexs, ConvexHullEntry* convex, Point* point) {
     
     if (CIRCLEQ_EMPTY(convexs) || (void*) convexs == (void*) convex) {
         ConvexHullEntry* new_entry = GEN_new_convexhullentry(point);
@@ -92,12 +121,12 @@ void CVH_add_imbrique(ListConvexHull* convexs, ConvexHullEntry* convex, Point* p
     bool ajoute = CVH_add(point, convex->convex, &reste_interieur);
 
     if (!ajoute) {
-        CVH_add_imbrique(convexs, CIRCLEQ_NEXT(convex, entries), point);
+        CVH_add_inception_recursif(convexs, CIRCLEQ_NEXT(convex, entries), point);
     }
 
     Vertex* vtx;
     CIRCLEQ_FOREACH(vtx, &reste_interieur, entries) {
-        CVH_add_imbrique(convexs, CIRCLEQ_NEXT(convex, entries), vtx->p);
+        CVH_add_inception_recursif(convexs, CIRCLEQ_NEXT(convex, entries), vtx->p);
     }
 
     return;
@@ -172,15 +201,16 @@ int CVH_cleaning(ConvexHull* convex, ListPoint* reste) {
 /**
  * @brief Crée un polygône convexe avec la liste
  * de points fournie.
+ * 
  * @param points Liste des points.
- * @param convex Adresse de l'objet ConvexHull initialisé.
+ * @param convex Adresse de l'objet ConvexHull de destination.
  * @param reste Adresse de la liste des points auquel seront
  * ajoutés les points n'appartenant pas au polygône convexe.
  * @param callback Fonction à appeler après chaque ajout de point,
  * prenant en paramètre l'objet ConvexHull et l'adresse de
  * la liste de points ``reste``.
  */
-void CVH_points_to_convex(
+void CVH_points_to_ConvexHull(
     ListPoint* points,
     ConvexHull* convex, ListPoint* reste,
     void (*callback)(ConvexHull*, ListPoint*)
@@ -200,6 +230,16 @@ void CVH_points_to_convex(
     }
 }
 
+/**
+ * @brief Crée une liste de polygône convexes imbriqués, à partir
+ * de la liste de points fournies 
+ * 
+ * @param points Adresse de la liste de points.
+ * @param convexs Adresse de l'entête de la liste de ConvexHull
+ * de destination
+ * @param callback Fonction à appeler après chaque ajout de point,
+ * prenant en paramètre l'objet ListConvexHull et l'adresse de
+ */
 void CVH_points_to_ListConvexHull(
     ListPoint* points,
     ListConvexHull* convexs,
@@ -208,7 +248,7 @@ void CVH_points_to_ListConvexHull(
     Vertex* vtx;
 
     CIRCLEQ_FOREACH(vtx, points, entries) {
-        CVH_add_imbrique(convexs, convexs->cqh_first, vtx->p);
+        CVH_add_inception_recursif(convexs, convexs->cqh_first, vtx->p);
         if (callback)
             callback(convexs);
     }
@@ -216,13 +256,18 @@ void CVH_points_to_ListConvexHull(
 
 /**
  * @brief Crée une liste de polygones convexes imbriqués.
+ * Cette algorithme est itératif, mais ne permet de créer
+ * une liste d'enveloppes uniquement avec une liste de points
+ * déjà créés, et ne permet d'ajouter qu'un seul point.
+ * En effet, nous itérons succesivement sur les points
+ * intérieurs.
  * 
  * @param points Adresse de la liste des points.
- * @param convexs Adresse de la liste de polygones convexes
- * de destination.
- * @param return Taille de la liste
+ * @param convexs Adresse de l'entête de la liste de
+ * polygones convexes de destination.
+ * @return int Taille de la liste
  */
-int CVH_convexhull_inception(ListPoint* points, ListConvexHull* convexs) {
+int CVH_add_inception_iteratif(ListPoint* points, ListConvexHull* convexs) {
     ListPoint reste, points2;
     ConvexHullEntry* convex_entry;
     ConvexHull* convex;
@@ -236,7 +281,7 @@ int CVH_convexhull_inception(ListPoint* points, ListConvexHull* convexs) {
         convex->color = GFX_map_color(i);
         convex_entry = malloc(sizeof(ConvexHullEntry));
         convex_entry->convex = convex;
-        CVH_points_to_convex(i == 0 ? points : &points2, convex, &reste, NULL);
+        CVH_points_to_ConvexHull(i == 0 ? points : &points2, convex, &reste, NULL);
         CIRCLEQ_INSERT_TAIL(convexs, convex_entry, entries);
         CIRCLEQ_MOVE_TO(&reste, &points2, entries);
         ++i;
@@ -284,7 +329,8 @@ int CVH_add_to_convex(ConvexHull* convex, Point* point, ListPoint* reste) {
 
 /**
  * @brief Initialise un objet ConvexHull
- * @return Adresse de l'instance du polygône convexe.
+ * @return Adresse de l'instance du polygône convexe, ou
+ * NULL en cas d'échec.
  */
 ConvexHull* CVH_init_convexhull(void) {
     ConvexHull* convex = calloc(1, sizeof(ConvexHull));

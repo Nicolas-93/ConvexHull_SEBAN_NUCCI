@@ -40,7 +40,12 @@ typedef struct ConvexHullEntry{
 } ConvexHullEntry;
 typedef CIRCLEQ_HEAD(ListConvexHull, ConvexHullEntry) ListConvexHull;
 
-void GEN_rectangle(ListPoint* points, int largeur, int hauteur, int nb_points);
+double rand_double(double n);
+double uniform(double a, double b);
+int random_bool();
+int random_direction();
+
+void GEN_choose_generation(Parameters params, ListPoint* points);
 Point GEN_formule_carre_uniforme(
     int largeur, int hauteur,
     int i, int nb_points, int r_max, double concentration
@@ -60,20 +65,14 @@ int GEN_points_formule(
     int nb_points, int r_max, double concentration, bool tri,
     Point (*formule) (int, int, int, int, int, double)
 );
-void GEN_carre(ListPoint* points, int largeur, int hauteur, int nb_points, int r_max);
 double GEN_distance(double ax, double ay, double bx, double by);
 int GEN_compare_point_distance(const void* a, const void* b);
 void GEN_sort_tab_PointDistance_to_ListPoint(PointDistance* tab_points, int size, ListPoint* points);
 
-void GEN_choose_generation(Parameters params, ListPoint* points);
-
 Vertex* GEN_new_vertex(Point point);
 Vertex* GEN_new_vertex_pointer(Point* point);
 void GEN_free_vertex_list(ListPoint* lst, bool free_points);
-double rand_double(double n);
-double uniform(double a, double b);
-int random_bool();
-int random_direction();
+
 
 /**
  * @brief Définit un élément comme tête de la liste 

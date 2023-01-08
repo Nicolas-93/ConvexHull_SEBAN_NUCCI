@@ -9,7 +9,6 @@ int main(int argc, char* argv[]) {
     Parameters params = parse_args(argc, argv);
     MLV_create_window("Convex Hull", "", params.window.width, params.window.height);
     SCN_menu(&params);
-    MLV_wait_seconds(1);
     MLV_free_window();
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
