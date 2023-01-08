@@ -204,7 +204,7 @@ void SCN_polygon_inception(Parameters params) {
         if (ev.type == MLV_KEY) {
             if (ev.key_btn == MLV_KEYBOARD_ESCAPE) {
                 CVH_free_vertex_list(&points, true);
-                // free convexs ici
+                CVH_free_ListConvexHull(&convexs);
                 break;
             }
         }

@@ -60,6 +60,7 @@ ConvexHullEntry* CVH_new_convexhullentry(Point* p);
 ConvexHull* CVH_init_convexhull(void);
 void CVH_free_vertex_list(ListPoint* lst, bool free_points);
 void CVH_free_convexhull(ConvexHull* convex);
+void CVH_free_ListConvexHull(ListConvexHull* convexs);
 
 /**
  * @brief Indique si le triangle est direct

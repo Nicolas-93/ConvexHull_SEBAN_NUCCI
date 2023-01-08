@@ -92,6 +92,7 @@ void CVH_add_inception_recursif(ListConvexHull* convexs, ConvexHullEntry* convex
     CIRCLEQ_FOREACH(vtx, &reste_interieur, entries) {
         CVH_add_inception_recursif(convexs, CIRCLEQ_NEXT(convex, entries), vtx->p);
     }
+    CVH_free_vertex_list(&reste_interieur, false);
 
     return;
 }
@@ -408,4 +409,16 @@ void CVH_free_vertex_list(ListPoint* lst, bool free_points) {
 void CVH_free_convexhull(ConvexHull* convex) {
     CVH_free_vertex_list((ListPoint*) &convex->poly, 0);
     free(convex);
+}
+
+void CVH_free_ListConvexHull(ListConvexHull* convexs) {
+    ConvexHullEntry *entry = CIRCLEQ_FIRST(convexs), *entry2;
+    
+    while (entry != (void*) convexs) {
+        entry2 = CIRCLEQ_NEXT(entry, entries);
+        CVH_free_convexhull(entry->convex);
+        free(entry);
+        entry = entry2;
+    }
+    CIRCLEQ_INIT(convexs);
 }
