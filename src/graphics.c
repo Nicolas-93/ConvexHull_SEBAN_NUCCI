@@ -27,21 +27,21 @@ MLV_Color GFX_map_color(int n) {
     const int opacity = 100;
     switch (n) {
     case 0:
-        return MLV_rgba(236, 111, 67, opacity);
+        return MLV_rgba(0, 184, 204, opacity);
     case 1:
-        return MLV_rgba(162, 32, 81, opacity);
+        return MLV_rgba(26, 128, 90, opacity);
     case 2:
-        return MLV_rgba(88, 53, 94, opacity);
+        return MLV_rgba(127, 177, 27, opacity);
     case 3:
-        return MLV_rgba(105, 142, 147, opacity);
+        return MLV_rgba(242, 220, 13, opacity);
     case 4:
-        return MLV_rgba(122, 231, 199, opacity);
+        return MLV_rgba(255, 184, 0, opacity);
     case 5:
-        return MLV_rgba(168, 243, 191, opacity);
+        return MLV_rgba(255, 87, 20, opacity);
     case 6:
-        return MLV_rgba(214, 255, 183, opacity);
+        return MLV_rgba(163, 23, 123, opacity);
     default:
-        return MLV_rgba(255, 246, 183, opacity);
+        return MLV_rgba(40, 53, 173, opacity);
     }
 }
 
