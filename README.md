@@ -5,7 +5,7 @@ Pour ce projet, nous avons fait le choix d'utiliser un Makefile afin de facilite
 ```sh
 make
 ```
-Le fichier exécutable se trouvera ensuite dans le dossier `build`, auquel vous devrez accéder au dossier build, avant de lancer le programme (La police de caractère se situe à cet endroit, est est nécessaire au bon fonctionnement).
+Le fichier exécutable se trouvera ensuite dans le dossier `build`, auquel vous devrez accéder avant de lancer le programme (La police de caractère se situe à cet endroit, et est nécessaire au bon fonctionnement).
 
 A noter, il est possible de passer en paramètre à `make`, `DEBUG_CVH_CLEANING=yes` afin d'animer pas à pas, l'algorithme de nettoyage.\
 Vous pouvez ignorer l'animation pendant l'ajout manuel des points en restant appuyé sur majuscule gauche. Pour avancer dans l'animation, vous pourrez appuyer sur espace.\
